@@ -27,6 +27,8 @@ NSURLSessionDataTask *downloadTask;
 NSDictionary *searchResult;
 NSInteger row;
 
+NSMutableDictionary *staticImageDictionary;
+
 NSURLSessionConfiguration *sessionConfig;
 NSURLSession *session;
 NSURLSessionDownloadTask *getImageTask;
@@ -121,21 +123,31 @@ NSURLSessionDownloadTask *getImageTask;
 }
 
 #pragma mark - custom methods
+//Caching doctor profile pictures
+- (UIImage*)imageNamed:(NSString*)imageNamed cache:(BOOL)cache
+{
+    UIImage* retImage = [staticImageDictionary objectForKey:imageNamed];
+    if (retImage == nil)
+    {
+        retImage = [UIImage imageWithData:[NSData dataWithContentsOfURL:[NSURL URLWithString:imageNamed]]];
+        if (cache)
+        {
+            if (staticImageDictionary == nil)
+                staticImageDictionary = [NSMutableDictionary new];
+            
+            [staticImageDictionary setObject:retImage forKey:imageNamed];
+        }
+    }
+    return retImage;
+}
 
 - (void)keyboardDidShow: (NSNotification *) notif{
     [UIView animateWithDuration:1 delay:0.0 options:UIViewAnimationOptionCurveLinear animations:^{
-        //[self.view addSubview:testView];
-        //testView.backgroundColor = [UIColor whiteColor];
-        //testView.alpha = 0.7;
-        //        CGPoint _centre = textField.center;
-        //        _centre.y = 20 + textField.bounds.size.height/2;
-        //        textField.center = _centre;
-        [self.tableView setHidden:NO];
         
+        [self.tableView setHidden:NO];
         [self.tableView setFrame:CGRectMake(0, 20+textField.frame.size.height, self.view.bounds.size.width, self.view.bounds.size.height)];
         [textField setFrame:CGRectMake(10.0,self.searchBarBackground.frame.size.height/2, self.searchBarBackground.frame.size.width-cancelButton.frame.size.width, 37)];
         [cancelButton setFrame:CGRectMake(self.searchBarBackground.frame.size.width-cancelButton.frame.size.width, textField.frame.size.height/2, 60.0, 37.0)];
-        
     } completion:nil];
 }
 
@@ -202,7 +214,6 @@ NSURLSessionDownloadTask *getImageTask;
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
-    //NSLog(@"%u",[[searchResult valueForKey:@"result"] count]);
     return 1;
 }
 
@@ -233,22 +244,16 @@ NSURLSessionDownloadTask *getImageTask;
     doctorPhoto.layer.cornerRadius = doctorPhoto.frame.size.height / 2;
     doctorPhoto.layer.borderWidth = 1.5f;
     doctorPhoto.layer.borderColor = [UIColor grayColor].CGColor;
-    //doctorPhoto.image = [UIImage imageNamed:@"appLogo"];
     
     NSString *imageURL = [[[[searchResult valueForKey:@"result"] objectAtIndex:indexPath.row] valueForKey:@"doctor"] valueForKey:@"profileImage"];
-    NSLog(@"%@",imageURL);
-    doctorPhoto.image = [UIImage imageWithData:[NSData dataWithContentsOfURL:[NSURL URLWithString:imageURL]]];
-//    getImageTask = [session downloadTaskWithRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:imageURL]] completionHandler:^(NSURL * _Nullable location, NSURLResponse * _Nullable response, NSError * _Nullable error) {
-//       // dispatch_async(dispatch_get_main_queue(), ^{
-//            
-//            UIImage *downloadedImage = [UIImage imageWithData:[NSData dataWithContentsOfURL:location]];
-//            
-//            doctorPhoto.image =downloadedImage;
-//        //});
-//    }];
-//    [getImageTask resume];
+    
+    UIImage *doctorImage = [self imageNamed:imageURL cache:YES];
+    doctorPhoto.image = doctorImage;
     return cell;
 }
+
+
+
 
 - (UIView *)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section
 {
@@ -260,13 +265,7 @@ NSURLSessionDownloadTask *getImageTask;
 #pragma mark - hide keyboard
 
 - (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
-    
     [self.view endEditing:YES];
-//    [UIView animateWithDuration:0.6 delay:0.1 options:nil animations:^{
-//        CGPoint _centre = searchBar.center;
-//        _centre.y -= 80;
-//        searchBar.center = _centre;
-//    } completion:nil];
 }
 
 - (void)didReceiveMemoryWarning {
