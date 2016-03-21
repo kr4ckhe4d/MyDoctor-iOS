@@ -27,6 +27,9 @@ NSURLSessionDataTask *downloadTask;
 NSDictionary *searchResult;
 NSInteger row;
 
+NSURLSessionConfiguration *sessionConfig;
+NSURLSession *session;
+NSURLSessionDownloadTask *getImageTask;
 @implementation MainViewController
 
 - (void)viewDidLoad {
@@ -130,8 +133,8 @@ NSInteger row;
         [self.tableView setHidden:NO];
         
         [self.tableView setFrame:CGRectMake(0, 20+textField.frame.size.height, self.view.bounds.size.width, self.view.bounds.size.height)];
-        [textField setFrame:CGRectMake(10.0,self.searchBarBackground.frame.size.height/2, 250, 37)];
-        [cancelButton setFrame:CGRectMake(260.0, textField.frame.size.height/2, 60.0, 37.0)];
+        [textField setFrame:CGRectMake(10.0,self.searchBarBackground.frame.size.height/2, self.searchBarBackground.frame.size.width-cancelButton.frame.size.width, 37)];
+        [cancelButton setFrame:CGRectMake(self.searchBarBackground.frame.size.width-cancelButton.frame.size.width, textField.frame.size.height/2, 60.0, 37.0)];
         
     } completion:nil];
 }
@@ -181,6 +184,10 @@ NSInteger row;
         [downloadTask resume];
 
     }
+    else{
+        searchResult = nil;
+        [self.tableView reloadData];
+    }
 }
 
 - (void)tableViewTapAction:(UITapGestureRecognizer*)sender {
@@ -190,13 +197,13 @@ NSInteger row;
 #pragma mark - table view delegate methods
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{
-    return 1;
+    return [[searchResult valueForKey:@"result"] count];
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
     //NSLog(@"%u",[[searchResult valueForKey:@"result"] count]);
-    return [[searchResult valueForKey:@"result"] count];
+    return 1;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section
@@ -207,23 +214,40 @@ NSInteger row;
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
     
     UITableViewCell *cell =[tableView dequeueReusableCellWithIdentifier:@"Cell" forIndexPath:indexPath];
-    cell.layer.cornerRadius = 10;
+    cell.layer.cornerRadius = cell.frame.size.height/2;
     cell.backgroundColor = [UIColor whiteColor];
     
-    
     UILabel *doctorName = (UILabel *)[cell viewWithTag:1];
-    doctorName.text = [[[[searchResult valueForKey:@"result"] objectAtIndex:row] valueForKey:@"doctor"] valueForKey:@"name"];
+    doctorName.text = [[[[searchResult valueForKey:@"result"] objectAtIndex:indexPath.row] valueForKey:@"doctor"] valueForKey:@"name"];
     
+    NSMutableString *specialitiesList = [NSMutableString stringWithFormat:@""];
+    for(NSArray *i in [[[searchResult valueForKey:@"result"] objectAtIndex:indexPath.row] valueForKey:@"speciality"]){
+        [specialitiesList appendFormat:@"%@, ",[i valueForKey:@"specialityName"]];
+    }
+
     UILabel *doctorSpeciality = (UILabel *)[cell viewWithTag:2];
-    doctorSpeciality.text = @"lollolllolllolllol";
+    doctorSpeciality.text = specialitiesList;
     
-    UIImage *doctorPhoto = (UIImage *)[cell viewWithTag:0];
-    doctorPhoto = [UIImage imageNamed:@"appLogo"];
+    UIImageView *doctorPhoto = (UIImageView *)[cell viewWithTag:3];
+    doctorPhoto.clipsToBounds = YES;
+    doctorPhoto.layer.cornerRadius = doctorPhoto.frame.size.height / 2;
+    doctorPhoto.layer.borderWidth = 1.5f;
+    doctorPhoto.layer.borderColor = [UIColor grayColor].CGColor;
+    //doctorPhoto.image = [UIImage imageNamed:@"appLogo"];
     
-    row++;
+    NSString *imageURL = [[[[searchResult valueForKey:@"result"] objectAtIndex:indexPath.row] valueForKey:@"doctor"] valueForKey:@"profileImage"];
+    NSLog(@"%@",imageURL);
+    doctorPhoto.image = [UIImage imageWithData:[NSData dataWithContentsOfURL:[NSURL URLWithString:imageURL]]];
+//    getImageTask = [session downloadTaskWithRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:imageURL]] completionHandler:^(NSURL * _Nullable location, NSURLResponse * _Nullable response, NSError * _Nullable error) {
+//       // dispatch_async(dispatch_get_main_queue(), ^{
+//            
+//            UIImage *downloadedImage = [UIImage imageWithData:[NSData dataWithContentsOfURL:location]];
+//            
+//            doctorPhoto.image =downloadedImage;
+//        //});
+//    }];
+//    [getImageTask resume];
     return cell;
-    
-   
 }
 
 - (UIView *)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section
