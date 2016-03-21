@@ -8,18 +8,24 @@
 
 #import "MainViewController.h"
 
-@interface MainViewController ()
+@interface MainViewController ()<UITextFieldDelegate,UITableViewDataSource,UITableViewDelegate>
 @property (weak, nonatomic) IBOutlet UIImageView *background;
-@property (weak, nonatomic) IBOutlet UITextField *textField;
+//@property (weak, nonatomic) IBOutlet UITextField *textField;
 @property (weak, nonatomic) IBOutlet UIImageView *applogo;
+@property (weak, nonatomic) IBOutlet UITableView *tableView;
+@property (weak, nonatomic) IBOutlet UIView *searchBarBackground;
 
 @end
 UISearchBar *searchBar;
+UITextField *textField;
+UIButton *cancelButton;
+UITableView *testView;
+NSURLSessionDataTask *downloadTask;
 @implementation MainViewController
 
 - (void)viewDidLoad {
     self.applogo.image = [UIImage imageNamed:@"appLogo"];
-    
+    [self.tableView setBackgroundColor:[UIColor colorWithWhite:1.0 alpha:0.5]];
     //NSLog(@"%f",[[UIApplication sharedApplication] statusBarFrame].size.height);
     
     UIGraphicsBeginImageContext(self.view.frame.size);
@@ -28,6 +34,20 @@ UISearchBar *searchBar;
     UIGraphicsEndImageContext();
     self.view.backgroundColor = [UIColor colorWithPatternImage:image];
     
+    //NSLog(@"x = %f y = %f height = %f width = %f",self.textField.frame.origin.x,self.textField.frame.origin.x,self.textField.bounds.size.height,self.textField.bounds.size.width);
+    cancelButton = [[UIButton alloc] initWithFrame:CGRectMake(-260.0, 20.0+self.searchBarBackground.frame.size.height/2, 60.0, 37.0)];
+    [self.view addSubview:cancelButton];
+    [cancelButton setTitle:@"Cancel" forState:UIControlStateNormal];
+    [cancelButton setTitleColor:[UIColor blueColor] forState:UIControlStateNormal];
+    [cancelButton addTarget:self
+               action:@selector(cancelButtonAction:)
+     forControlEvents:UIControlEventTouchUpInside];
+    
+    textField = [[UITextField alloc] initWithFrame:CGRectMake(10.0, self.view.frame.size.height/2, self.view.frame.size.width-20, 37.0)];
+    [self.view addSubview:textField];
+    [textField setPlaceholder:@"Search by name"];
+
+    [textField setBackgroundColor:[UIColor greenColor]];
     
     // create effect
     UIBlurEffect *blur = [UIBlurEffect effectWithStyle:UIBlurEffectStyleLight];
@@ -40,33 +60,111 @@ UISearchBar *searchBar;
     CALayer *border = [CALayer layer];
     CGFloat borderWidth = 2;
     border.borderColor = [UIColor orangeColor].CGColor;
-    border.frame = CGRectMake(0, self.textField.frame.size.height - borderWidth, self.textField.frame.size.width, self.textField.frame.size.height);
+    border.frame = CGRectMake(0, textField.frame.size.height - borderWidth, textField.frame.size.width, textField.frame.size.height);
     border.borderWidth = borderWidth;
-    [self.textField.layer addSublayer:border];
-    self.textField.layer.masksToBounds = YES;
-    self.textField.backgroundColor = [UIColor clearColor];
+    [textField.layer addSublayer:border];
+    textField.layer.masksToBounds = YES;
+    textField.backgroundColor = [UIColor clearColor];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(keyboardDidShow:)
+                                                 name:UIKeyboardWillShowNotification
+                                               object:nil];
+    
+    UITapGestureRecognizer *tableViewTapped = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tableViewTapAction:)];
+    [self.tableView addGestureRecognizer:tableViewTapped];
     
     
     [super viewDidLoad];
     // Do any additional setup after loading the view.
 }
+
+-(void)viewWillAppear:(BOOL)animated{
+    [self.tableView setHidden:YES];
+}
+
+#pragma mark - button actions
+
 - (IBAction)btnRate:(id)sender {
-        searchBar = [[UISearchBar alloc] initWithFrame:CGRectMake(0, -50, self.view.bounds.size.width, 40)];
-        [searchBar setPlaceholder:@"Search a Doctor"];
-        [self.view addSubview:searchBar];
-        [searchBar becomeFirstResponder];
+    // 1
+    NSString *dataUrl = @"http://52.58.12.56/dr-app/web/api/doctors?keyword=ja";
+    NSURL *url = [NSURL URLWithString:dataUrl];
     
-    UITableView *testView = [[UITableView alloc] initWithFrame:CGRectMake(0, 20+self.textField.frame.size.height, self.view.bounds.size.width, self.view.bounds.size.height)];
+    // 2
+    downloadTask = [[NSURLSession sharedSession]
+                                          dataTaskWithURL:url completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+                                              NSDictionary *json = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
+                                              NSLog(@"%@", [[json valueForKey:@"result"] valueForKey:@"doctor"]);
+                                          }];
     
-    [self.view addSubview:testView];
+    // 3
+    [downloadTask resume];
+}
+
+#pragma mark - custom methods
+
+- (void)keyboardDidShow: (NSNotification *) notif{
+    [UIView animateWithDuration:1 delay:0.0 options:UIViewAnimationOptionCurveLinear animations:^{
+        //[self.view addSubview:testView];
+        //testView.backgroundColor = [UIColor whiteColor];
+        //testView.alpha = 0.7;
+        //        CGPoint _centre = textField.center;
+        //        _centre.y = 20 + textField.bounds.size.height/2;
+        //        textField.center = _centre;
+        [self.tableView setHidden:NO];
+        
+        [self.tableView setFrame:CGRectMake(0, 20+textField.frame.size.height, self.view.bounds.size.width, self.view.bounds.size.height)];
+        [textField setFrame:CGRectMake(10.0,self.searchBarBackground.frame.size.height/2, 250, 37)];
+        [cancelButton setFrame:CGRectMake(260.0, textField.frame.size.height/2, 60.0, 37.0)];
+        
+    } completion:nil];
+}
+
+- (IBAction)cancelButtonAction:(id)sender{
+    [self.view endEditing:YES];
+    [self.tableView setHidden:YES];
+    [UIView animateWithDuration:0.3 delay:0.0 options:UIViewAnimationOptionCurveLinear animations:^{
+        
+        [cancelButton setFrame:CGRectMake(-260.0, 20.0+textField.frame.size.height/2, 60.0, 37.0)];
+        [textField setFrame:CGRectMake(10.0, self.view.frame.size.height/2, self.view.frame.size.width-10, 37.0)];
+        
+    } completion:nil];
+}
+
+- (void)tableViewTapAction:(UITapGestureRecognizer*)sender {
+    [self.view endEditing:YES];
+}
+
+#pragma mark - table view delegate methods
+
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{
+    return 1;
+}
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
     
-        [UIView animateWithDuration:0.6 delay:0.1 options:nil animations:^{
-            CGPoint _centre = searchBar.center;
-            _centre.y = 20 + searchBar.bounds.size.height/2;
-            searchBar.center = _centre;
-            testView.backgroundColor = [UIColor whiteColor];
-            testView.alpha = 0.5;
-        } completion:nil];
+    UITableViewCell *cell =[tableView dequeueReusableCellWithIdentifier:@"Cell" forIndexPath:indexPath];
+    cell.layer.cornerRadius = 10;
+    cell.backgroundColor = [UIColor whiteColor];
+    
+    return cell;
+}
+
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
+{
+    return 5;
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section
+{
+    return 5;
+}
+
+- (UIView *)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section
+{
+    UIView *viewForFooter = [UIView new];
+    [viewForFooter setBackgroundColor:[UIColor clearColor]];
+    return viewForFooter;
 }
 
 #pragma mark - hide keyboard
@@ -74,11 +172,11 @@ UISearchBar *searchBar;
 - (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
     
     [self.view endEditing:YES];
-    [UIView animateWithDuration:0.6 delay:0.1 options:nil animations:^{
-        CGPoint _centre = searchBar.center;
-        _centre.y -= 80;
-        searchBar.center = _centre;
-    } completion:nil];
+//    [UIView animateWithDuration:0.6 delay:0.1 options:nil animations:^{
+//        CGPoint _centre = searchBar.center;
+//        _centre.y -= 80;
+//        searchBar.center = _centre;
+//    } completion:nil];
 }
 
 - (void)didReceiveMemoryWarning {
