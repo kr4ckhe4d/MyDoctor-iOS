@@ -7,6 +7,8 @@
 //
 
 #import "MainViewController.h"
+#import "RateView.h"
+#import "DoctorProfileViewController.h"
 
 @interface MainViewController ()<UITextFieldDelegate,UITableViewDataSource,UITableViewDelegate>
 @property (weak, nonatomic) IBOutlet UIImageView *background;
@@ -25,6 +27,7 @@ UITableView *testView;
 NSURLSessionDataTask *downloadTask;
 
 NSDictionary *searchResult;
+NSDictionary *reviews;
 NSInteger row;
 
 NSMutableDictionary *staticImageDictionary;
@@ -94,6 +97,7 @@ NSURLSessionDownloadTask *getImageTask;
     
     // Search Results tableView touched action
     UITapGestureRecognizer *tableViewTapped = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tableViewTapAction:)];
+    tableViewTapped.cancelsTouchesInView = NO;
     [self.tableView addGestureRecognizer:tableViewTapped];
     
     [super viewDidLoad];
@@ -107,19 +111,20 @@ NSURLSessionDownloadTask *getImageTask;
 #pragma mark - button actions
 
 - (IBAction)btnRate:(id)sender {
-    // 1
-    NSString *dataUrl = @"http://52.58.12.56/dr-app/web/api/doctors?keyword=ja";
-    NSURL *url = [NSURL URLWithString:dataUrl];
-    
-    // 2
-    downloadTask = [[NSURLSession sharedSession]
-                                          dataTaskWithURL:url completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
-                                              NSDictionary *json = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
-                                              NSLog(@"%@", [[json valueForKey:@"result"] valueForKey:@"doctor"]);
-                                          }];
-    
-    // 3
-    [downloadTask resume];
+//    // 1
+//    NSString *dataUrl = @"http://52.58.12.56/dr-app/web/api/doctors?keyword=ja";
+//    NSURL *url = [NSURL URLWithString:dataUrl];
+//    
+//    // 2
+//    downloadTask = [[NSURLSession sharedSession]
+//                                          dataTaskWithURL:url completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+//                                              NSDictionary *json = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
+//                                              NSLog(@"%@", [[json valueForKey:@"result"] valueForKey:@"doctor"]);
+//                                          }];
+//    
+//    // 3
+//    [downloadTask resume];
+    NSLog(@"%ld",(long)[self getDoctorRating:2]);
 }
 
 #pragma mark - custom methods
@@ -168,6 +173,15 @@ NSURLSessionDownloadTask *getImageTask;
     } completion:nil];
 }
 
+- (NSInteger)getDoctorRating:(int)doctorId{
+    NSString *dataUrl = [NSString stringWithFormat:@"http://52.58.12.56/dr-app/web/api/review/%d/1",doctorId];
+    NSURL *url = [NSURL URLWithString:dataUrl];
+    NSURLRequest *request = [NSURLRequest requestWithURL:url cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:60.0];
+    NSData *data = [NSURLConnection sendSynchronousRequest:request returningResponse:nil error:nil];
+    reviews = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
+    return [[reviews valueForKey:@"doctorRating"] integerValue];
+}
+
 - (void)textFieldDidChange:(id)sender{
     NSInteger numberOfCharacters = [textField.text length];
     if (numberOfCharacters >= 2) {
@@ -176,7 +190,6 @@ NSURLSessionDownloadTask *getImageTask;
         NSURL *url = [NSURL URLWithString:dataUrl];
         
         // 2
-        
         downloadTask = [[NSURLSession sharedSession]
                         dataTaskWithURL:url completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
                             NSDictionary *json = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
@@ -186,7 +199,7 @@ NSURLSessionDownloadTask *getImageTask;
                             searchResult = [NSDictionary dictionaryWithDictionary:json];
                             NSLog(@"%@", [[searchResult valueForKey:@"result"] objectAtIndex:0]);
                             
-                                row = 0;
+                                //row = 0;
                             
                             [self.tableView reloadData];
                                 });
@@ -222,6 +235,13 @@ NSURLSessionDownloadTask *getImageTask;
     return 5;
 }
 
+- (UIView *)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section
+{
+    UIView *viewForFooter = [UIView new];
+    [viewForFooter setBackgroundColor:[UIColor clearColor]];
+    return viewForFooter;
+}
+
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
     
     UITableViewCell *cell =[tableView dequeueReusableCellWithIdentifier:@"Cell" forIndexPath:indexPath];
@@ -247,19 +267,43 @@ NSURLSessionDownloadTask *getImageTask;
     
     NSString *imageURL = [[[[searchResult valueForKey:@"result"] objectAtIndex:indexPath.row] valueForKey:@"doctor"] valueForKey:@"profileImage"];
     
+    RateView* rv = [RateView rateViewWithRating:4];
+    //rv.rating = 3.4;
+    int docId = [[[[[searchResult valueForKey:@"result"] objectAtIndex:indexPath.row] valueForKey:@"doctor"] valueForKey:@"id"] intValue];
+    NSLog(@"doctir id is %d",docId);
+    rv.starSize = 15;
+    rv.rating = [self getDoctorRating:docId]/2;
+    rv.starFillColor = [UIColor yellowColor];
+    rv.starNormalColor = [UIColor whiteColor];
+    rv.starBorderColor = [UIColor orangeColor];
+    [[cell viewWithTag:4] addSubview:rv];
+    
     UIImage *doctorImage = [self imageNamed:imageURL cache:YES];
     doctorPhoto.image = doctorImage;
     return cell;
 }
 
+-(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
+    [self.view endEditing:YES];
+    [self.tableView setHidden:YES];
+    
+    textField.text = nil;
+    
+    [UIView animateWithDuration:0.3 delay:0.0 options:UIViewAnimationOptionCurveLinear animations:^{
+        
+        [cancelButton setFrame:CGRectMake(-260.0, 20.0+textField.frame.size.height/2, 60.0, 37.0)];
+        [textField setFrame:CGRectMake(10.0, self.view.frame.size.height/2, self.view.frame.size.width-10, 37.0)];
+        
+    } completion:nil];
+    [self performSegueWithIdentifier:@"DOCTOR_PROFILE" sender:self];
+}
 
-
-
-- (UIView *)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section
-{
-    UIView *viewForFooter = [UIView new];
-    [viewForFooter setBackgroundColor:[UIColor clearColor]];
-    return viewForFooter;
+#pragma mark - prepare for segue
+-(void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender{
+    NSIndexPath *indexPath = [self.tableView indexPathForSelectedRow];
+   // NSLog(@"%ld",[[[[[searchResult valueForKey:@"result"] objectAtIndex:indexPath.row] valueForKey:@"doctor"] valueForKey:@"id"] integerValue]);
+    DoctorProfileViewController *doctorProfileViewController = (DoctorProfileViewController *)segue.destinationViewController;
+    doctorProfileViewController.doctorId = [[[[[searchResult valueForKey:@"result"] objectAtIndex:indexPath.row] valueForKey:@"doctor"] valueForKey:@"id"] integerValue];
 }
 
 #pragma mark - hide keyboard

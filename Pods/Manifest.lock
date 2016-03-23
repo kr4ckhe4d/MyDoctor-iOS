@@ -1,0 +1,10 @@
+PODS:
+  - RateView (1.2)
+
+DEPENDENCIES:
+  - RateView
+
+SPEC CHECKSUMS:
+  RateView: d4d12e9bb76dc23a77a56f4e5c5fb530a3f3f998
+
+COCOAPODS: 0.39.0
