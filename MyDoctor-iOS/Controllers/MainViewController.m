@@ -106,6 +106,7 @@ NSURLSessionDownloadTask *getImageTask;
 
 -(void)viewWillAppear:(BOOL)animated{
     [self.tableView setHidden:YES];
+    [self cancelButtonAction:nil];
 }
 
 #pragma mark - button actions

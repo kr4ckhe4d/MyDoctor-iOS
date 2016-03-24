@@ -9,16 +9,20 @@
 #import "DoctorProfileViewController.h"
 #import "RateView.h"
 
-@interface DoctorProfileViewController ()
+@interface DoctorProfileViewController ()<UITableViewDataSource,UITableViewDelegate>
 @property (weak, nonatomic) IBOutlet UIView *profilePictureBackground;
 @property (weak, nonatomic) IBOutlet UIImageView *doctorPhoto;
 @property (weak, nonatomic) IBOutlet UIView *viewContent;
 @property (weak, nonatomic) IBOutlet UILabel *doctorName;
 @property (weak, nonatomic) IBOutlet UILabel *lblSpecialities;
 @property (weak, nonatomic) IBOutlet UIView *ratingsView;
+@property (weak, nonatomic) IBOutlet UIButton *btnShowReviews;
+@property (weak, nonatomic) IBOutlet UIButton *btnWriteReview;
+@property (weak, nonatomic) IBOutlet UITableView *tableView;
 
 @end
 NSDictionary *doctorInformation;
+NSDictionary *doctorHospitals;
 NSURLSessionDataTask *getJSONTask;
 NSMutableDictionary *imageDictionary;
 NSMutableDictionary *doctorReviews;
@@ -53,7 +57,8 @@ NSMutableDictionary *doctorReviews;
     getJSONTask = [[NSURLSession sharedSession]
                     dataTaskWithURL:url completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
                         NSDictionary *json = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
-                        
+                        doctorInformation = [NSDictionary dictionaryWithDictionary:json];
+
                         dispatch_async(dispatch_get_main_queue(), ^{
                             
                             doctorInformation = [NSDictionary dictionaryWithDictionary:json];
@@ -84,11 +89,14 @@ NSMutableDictionary *doctorReviews;
     
     rv.starSize = self.ratingsView.frame.size.height;
     rv.rating = [self getDoctorRating:(int)self.doctorId]/2;
-    rv.starFillColor = [UIColor yellowColor];
+    rv.starFillColor = [UIColor orangeColor];
     rv.starNormalColor = [UIColor whiteColor];
     rv.starBorderColor = [UIColor orangeColor];
     rv.center = CGPointMake(self.ratingsView.frame.size.width/2, self.ratingsView.frame.size.height/2);
     [self.ratingsView addSubview:rv];
+    
+    self.btnShowReviews.layer.cornerRadius = 3;
+    self.btnWriteReview.layer.cornerRadius = 3;
 }
 
 #pragma mark - button actions
@@ -122,6 +130,48 @@ NSMutableDictionary *doctorReviews;
     NSData *data = [NSURLConnection sendSynchronousRequest:request returningResponse:nil error:nil];
     doctorReviews = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
     return [[doctorReviews valueForKey:@"doctorRating"] integerValue];
+}
+
+#pragma mark - table view delegate methods
+
+-(NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{
+    NSInteger noOfHospitals = [[doctorInformation valueForKey:@"hospital"] count];
+    return noOfHospitals*2;
+}
+
+-(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
+    if (indexPath.row%2==1) {
+        return 2;
+    }
+    else{
+        return 44;
+    }
+}
+
+-(UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
+    UITableViewCell *cell =[tableView dequeueReusableCellWithIdentifier:@"Cell" forIndexPath:indexPath];
+    if (indexPath.row%2==1) {
+        cell.backgroundColor = [UIColor whiteColor];
+        cell.userInteractionEnabled = NO;
+    }
+    else{
+        cell.backgroundColor = [UIColor colorWithWhite:0.8 alpha:0.7];
+        //cell.alpha = 0.3;
+        UIImageView *rightArrow = (UIImageView *)[cell viewWithTag:5];
+        //rightArrow.frame = CGRectMake(cell.frame.size.width-cell.frame.size.height/2, cell.frame.size.height/2, 2, 2);
+        rightArrow.image = [UIImage imageNamed:@"rightArrow"];
+        cell.userInteractionEnabled = YES;
+        cell.textLabel.text = [[[doctorInformation valueForKey:@"hospital"] objectAtIndex:indexPath.row] valueForKey:@"name"];
+        cell.textLabel.textColor = [UIColor blackColor];
+
+
+    }
+    //NSLog(@"%@",doctorInformation);
+    return cell;
+}
+
+-(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
+    NSLog(@"Row number is: %ld", indexPath.row/2);
 }
 /*
 #pragma mark - Navigation
