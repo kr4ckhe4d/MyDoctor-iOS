@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		7C8E89401CA28B4F006DDDF5 /* DoctorProfileViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7C8E893F1CA28B4F006DDDF5 /* DoctorProfileViewController.m */; };
 		7C8E89421CA29BC3006DDDF5 /* stethoscope.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 7C8E89411CA29BC3006DDDF5 /* stethoscope.jpg */; };
+		7CD96E891CA3EEDA00E0D918 /* ReviewsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7CD96E881CA3EEDA00E0D918 /* ReviewsViewController.m */; };
 		7CE74DFE1C993E2C002DD59C /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 7CE74DFD1C993E2C002DD59C /* main.m */; };
 		7CE74E011C993E2C002DD59C /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 7CE74E001C993E2C002DD59C /* AppDelegate.m */; };
 		7CE74E071C993E2C002DD59C /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7CE74E051C993E2C002DD59C /* Main.storyboard */; };
@@ -25,6 +26,8 @@
 		7C8E893E1CA28B4F006DDDF5 /* DoctorProfileViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DoctorProfileViewController.h; path = Controllers/DoctorProfileViewController.h; sourceTree = "<group>"; };
 		7C8E893F1CA28B4F006DDDF5 /* DoctorProfileViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = DoctorProfileViewController.m; path = Controllers/DoctorProfileViewController.m; sourceTree = "<group>"; };
 		7C8E89411CA29BC3006DDDF5 /* stethoscope.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = stethoscope.jpg; sourceTree = "<group>"; };
+		7CD96E871CA3EEDA00E0D918 /* ReviewsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ReviewsViewController.h; path = Controllers/ReviewsViewController.h; sourceTree = "<group>"; };
+		7CD96E881CA3EEDA00E0D918 /* ReviewsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ReviewsViewController.m; path = Controllers/ReviewsViewController.m; sourceTree = "<group>"; };
 		7CE74DF91C993E2C002DD59C /* MyDoctor-iOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "MyDoctor-iOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		7CE74DFD1C993E2C002DD59C /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		7CE74DFF1C993E2C002DD59C /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -118,6 +121,8 @@
 				7CE74E171C996BF3002DD59C /* MainViewController.m */,
 				7C8E893E1CA28B4F006DDDF5 /* DoctorProfileViewController.h */,
 				7C8E893F1CA28B4F006DDDF5 /* DoctorProfileViewController.m */,
+				7CD96E871CA3EEDA00E0D918 /* ReviewsViewController.h */,
+				7CD96E881CA3EEDA00E0D918 /* ReviewsViewController.m */,
 			);
 			name = Controllers;
 			sourceTree = "<group>";
@@ -247,6 +252,7 @@
 			files = (
 				7C8E89401CA28B4F006DDDF5 /* DoctorProfileViewController.m in Sources */,
 				7CE74E0A1C993E2C002DD59C /* MyDoctor_iOS.xcdatamodeld in Sources */,
+				7CD96E891CA3EEDA00E0D918 /* ReviewsViewController.m in Sources */,
 				7CE74E011C993E2C002DD59C /* AppDelegate.m in Sources */,
 				7CE74DFE1C993E2C002DD59C /* main.m in Sources */,
 				7CE74E181C996BF3002DD59C /* MainViewController.m in Sources */,

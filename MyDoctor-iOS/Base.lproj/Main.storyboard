@@ -137,21 +137,21 @@
                             <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="cHF-Yo-bJL">
                                 <rect key="frame" x="0.0" y="0.0" width="320" height="150"/>
                                 <subviews>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Doctor's Profile" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="vb1-6v-xsL">
-                                        <rect key="frame" x="20" y="34" width="280" height="33"/>
-                                        <color key="tintColor" red="0.13333334028720856" green="0.51764708757400513" blue="0.93725496530532837" alpha="1" colorSpace="deviceRGB"/>
-                                        <fontDescription key="fontDescription" type="boldSystem" pointSize="20"/>
-                                        <color key="textColor" red="0.0" green="0.94978687490000002" blue="1" alpha="0.85999999999999999" colorSpace="calibratedRGB"/>
-                                        <nil key="highlightedColor"/>
-                                    </label>
                                     <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="K8C-Ah-Nxr">
-                                        <rect key="frame" x="20" y="41" width="17" height="20"/>
+                                        <rect key="frame" x="8" y="41" width="17" height="20"/>
                                         <color key="tintColor" red="0.0" green="0.94978687490000002" blue="1" alpha="0.85999999999999999" colorSpace="calibratedRGB"/>
                                         <state key="normal" image="backArrow"/>
                                         <connections>
                                             <action selector="btnBack:" destination="5IM-RK-7wZ" eventType="touchUpInside" id="HCE-Cl-ZVa"/>
                                         </connections>
                                     </button>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Doctor's Profile" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="vb1-6v-xsL">
+                                        <rect key="frame" x="20" y="34" width="280" height="33"/>
+                                        <color key="tintColor" red="0.13333334028720856" green="0.51764708757400513" blue="0.93725496530532837" alpha="1" colorSpace="deviceRGB"/>
+                                        <fontDescription key="fontDescription" type="boldSystem" pointSize="20"/>
+                                        <color key="textColor" red="0.13174304644864882" green="0.67085883594223272" blue="0.80596985480000005" alpha="1" colorSpace="calibratedRGB"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
                                 </subviews>
                                 <color key="backgroundColor" white="0.66666666666666663" alpha="0.41999999999999998" colorSpace="calibratedWhite"/>
                             </view>
@@ -197,6 +197,9 @@
                                         <state key="normal" title="Show Reviews">
                                             <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                         </state>
+                                        <connections>
+                                            <action selector="btnShowReviews:" destination="5IM-RK-7wZ" eventType="touchUpInside" id="Jwz-3T-la2"/>
+                                        </connections>
                                     </button>
                                     <tableView clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="46Z-eQ-j0q">
                                         <rect key="frame" x="19" y="330" width="283" height="161"/>
@@ -228,7 +231,7 @@
                     </view>
                     <simulatedScreenMetrics key="simulatedDestinationMetrics" type="retina4"/>
                     <connections>
-                        <outlet property="btnShowReviews" destination="EVP-h5-Fpi" id="8fd-aP-7B2"/>
+                        <outlet property="btnShowReviews" destination="EVP-h5-Fpi" id="D5E-3R-UEB"/>
                         <outlet property="btnWriteReview" destination="ZPz-zI-RtE" id="mX2-uj-ACh"/>
                         <outlet property="doctorName" destination="4eA-km-fP0" id="96z-MT-tqU"/>
                         <outlet property="doctorPhoto" destination="HWy-WA-pRg" id="v8G-WV-ofN"/>
@@ -237,11 +240,109 @@
                         <outlet property="ratingsView" destination="zw4-Ot-sbM" id="9BK-Jj-0il"/>
                         <outlet property="tableView" destination="46Z-eQ-j0q" id="oVw-i5-mZL"/>
                         <outlet property="viewContent" destination="9Pb-WJ-Az3" id="ZEB-2L-cbe"/>
+                        <segue destination="t4f-dQ-a2P" kind="showDetail" identifier="REVIEWS" id="fwx-bB-sDe"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="AZ1-M1-AYh" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="1025" y="365"/>
+        </scene>
+        <!--Reviews View Controller-->
+        <scene sceneID="73T-5H-GjO">
+            <objects>
+                <viewController id="t4f-dQ-a2P" customClass="ReviewsViewController" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="WJe-sL-Zw9"/>
+                        <viewControllerLayoutGuide type="bottom" id="2XI-6C-rqG"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="YIK-72-Gi3">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="V9h-HI-G34">
+                                <rect key="frame" x="0.0" y="0.0" width="320" height="80"/>
+                                <subviews>
+                                    <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ddz-la-yIv">
+                                        <rect key="frame" x="8" y="30" width="17" height="20"/>
+                                        <state key="normal" image="backArrow"/>
+                                        <connections>
+                                            <action selector="btnBack:" destination="t4f-dQ-a2P" eventType="touchUpInside" id="f5s-a3-PqL"/>
+                                        </connections>
+                                    </button>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Reviews" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="zT0-Hb-E82">
+                                        <rect key="frame" x="8" y="30" width="304" height="21"/>
+                                        <fontDescription key="fontDescription" type="boldSystem" pointSize="20"/>
+                                        <color key="textColor" red="0.13174304640000001" green="0.67085883589999995" blue="0.80596985480000005" alpha="1" colorSpace="calibratedRGB"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                </subviews>
+                                <color key="backgroundColor" white="0.66666666669999997" alpha="0.41999999999999998" colorSpace="calibratedWhite"/>
+                            </view>
+                            <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="2if-LV-w23">
+                                <rect key="frame" x="20" y="88" width="90" height="90"/>
+                                <subviews>
+                                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Gov-Rh-ruO">
+                                        <rect key="frame" x="5" y="5" width="80" height="80"/>
+                                    </imageView>
+                                </subviews>
+                                <color key="backgroundColor" red="0.87413196431265938" green="0.87413196431265938" blue="0.87413196431265938" alpha="0.41999999999999998" colorSpace="calibratedRGB"/>
+                            </view>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="" textAlignment="natural" lineBreakMode="clip" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="kXR-J0-KCn">
+                                <rect key="frame" x="118" y="123" width="182" height="22"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="13"/>
+                                <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Gt4-kD-oQC">
+                                <rect key="frame" x="118" y="152" width="83" height="16"/>
+                            </view>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Ghn-H3-o4K">
+                                <rect key="frame" x="209" y="149" width="91" height="21"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="nb5-ad-A1w">
+                                <rect key="frame" x="20" y="186" width="280" height="382"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <prototypes>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="Cell" id="o4k-zb-7II">
+                                        <rect key="frame" x="0.0" y="28" width="280" height="44"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="o4k-zb-7II" id="5PK-4J-GEs">
+                                            <rect key="frame" x="0.0" y="0.0" width="280" height="43"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                        </tableViewCellContentView>
+                                    </tableViewCell>
+                                </prototypes>
+                                <connections>
+                                    <outlet property="dataSource" destination="t4f-dQ-a2P" id="WN0-5W-Vds"/>
+                                    <outlet property="delegate" destination="t4f-dQ-a2P" id="4ng-QC-qRr"/>
+                                </connections>
+                            </tableView>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="" textAlignment="natural" lineBreakMode="clip" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Rdf-Zb-ZrO">
+                                <rect key="frame" x="118" y="94" width="182" height="21"/>
+                                <fontDescription key="fontDescription" type="boldSystem" pointSize="15"/>
+                                <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    </view>
+                    <simulatedScreenMetrics key="simulatedDestinationMetrics" type="retina4"/>
+                    <connections>
+                        <outlet property="doctorProfilePic" destination="Gov-Rh-ruO" id="JyO-Cg-b5F"/>
+                        <outlet property="lblDoctorName" destination="Rdf-Zb-ZrO" id="YNr-yT-wgF"/>
+                        <outlet property="lblDoctorSpecialities" destination="kXR-J0-KCn" id="JJa-vP-adu"/>
+                        <outlet property="lblRating" destination="Ghn-H3-o4K" id="oTW-Gz-Sra"/>
+                        <outlet property="profilePicBackground" destination="2if-LV-w23" id="DJO-7c-psv"/>
+                        <outlet property="ratingsView" destination="Gt4-kD-oQC" id="kd1-Ms-Pgw"/>
+                        <outlet property="tableView" destination="nb5-ad-A1w" id="Aj9-vO-kDY"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Nfc-E3-0h0" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1459" y="365"/>
         </scene>
     </scenes>
     <resources>

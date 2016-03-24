@@ -35,6 +35,7 @@ NSMutableDictionary *staticImageDictionary;
 NSURLSessionConfiguration *sessionConfig;
 NSURLSession *session;
 NSURLSessionDownloadTask *getImageTask;
+UIImage *downloadedImage;
 @implementation MainViewController
 
 - (void)viewDidLoad {
@@ -281,10 +282,13 @@ NSURLSessionDownloadTask *getImageTask;
     
     UIImage *doctorImage = [self imageNamed:imageURL cache:YES];
     doctorPhoto.image = doctorImage;
+    downloadedImage = doctorImage;
     return cell;
 }
 
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
+    
+    [self performSegueWithIdentifier:@"DOCTOR_PROFILE" sender:self];
     [self.view endEditing:YES];
     [self.tableView setHidden:YES];
     
@@ -296,7 +300,6 @@ NSURLSessionDownloadTask *getImageTask;
         [textField setFrame:CGRectMake(10.0, self.view.frame.size.height/2, self.view.frame.size.width-10, 37.0)];
         
     } completion:nil];
-    [self performSegueWithIdentifier:@"DOCTOR_PROFILE" sender:self];
 }
 
 #pragma mark - prepare for segue

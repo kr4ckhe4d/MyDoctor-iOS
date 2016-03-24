@@ -8,6 +8,7 @@
 
 #import "DoctorProfileViewController.h"
 #import "RateView.h"
+#import "ReviewsViewController.h"
 
 @interface DoctorProfileViewController ()<UITableViewDataSource,UITableViewDelegate>
 @property (weak, nonatomic) IBOutlet UIView *profilePictureBackground;
@@ -104,6 +105,19 @@ NSMutableDictionary *doctorReviews;
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 
+- (IBAction)btnShowReviews:(id)sender {
+    [self performSegueWithIdentifier:@"REVIEWS" sender:self];
+}
+
+#pragma mark - prepare for segue
+-(void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender{
+    ReviewsViewController *reviewsViewController = (ReviewsViewController *)segue.destinationViewController;
+    reviewsViewController.theImage = self.doctorPhoto.image;
+    reviewsViewController.doctorName = self.doctorName.text = [NSString stringWithFormat:@"Dr. %@",[[doctorInformation valueForKey:@"doctor"] valueForKey:@"name"]];
+    reviewsViewController.doctorSpecialities = self.lblSpecialities.text;
+    reviewsViewController.reviews = [NSDictionary dictionaryWithDictionary:doctorReviews];
+}
+
 #pragma mark - custom methods
 //Caching doctor profile pictures
 - (UIImage*)imageNamed:(NSString*)imageNamed cache:(BOOL)cache
@@ -123,13 +137,13 @@ NSMutableDictionary *doctorReviews;
     return retImage;
 }
 
-- (NSInteger)getDoctorRating:(int)doctorId{
+- (CGFloat)getDoctorRating:(int)doctorId{
     NSString *dataUrl = [NSString stringWithFormat:@"http://52.58.12.56/dr-app/web/api/review/%d/1",doctorId];
     NSURL *url = [NSURL URLWithString:dataUrl];
     NSURLRequest *request = [NSURLRequest requestWithURL:url cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:60.0];
     NSData *data = [NSURLConnection sendSynchronousRequest:request returningResponse:nil error:nil];
     doctorReviews = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
-    return [[doctorReviews valueForKey:@"doctorRating"] integerValue];
+    return [[doctorReviews valueForKey:@"doctorRating"] floatValue];
 }
 
 #pragma mark - table view delegate methods
@@ -155,7 +169,7 @@ NSMutableDictionary *doctorReviews;
         cell.userInteractionEnabled = NO;
     }
     else{
-        cell.backgroundColor = [UIColor colorWithWhite:0.8 alpha:0.7];
+        cell.backgroundColor = [UIColor colorWithWhite:0.8 alpha:0.5];
         //cell.alpha = 0.3;
         UIImageView *rightArrow = (UIImageView *)[cell viewWithTag:5];
         //rightArrow.frame = CGRectMake(cell.frame.size.width-cell.frame.size.height/2, cell.frame.size.height/2, 2, 2);
