@@ -67,15 +67,23 @@
 
 #pragma mark - table view delegate methods
 -(NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{
-    return 8;
+    return [[self.reviews  valueForKey:@"result"] count]*2;
 }
 
 -(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
     if (indexPath.row %2 == 1) {
-        return  2;
+        // Fetch yourText for this row from your data source..
+        return 2;
     }
     else{
-        return 44;
+        NSString *yourText = [[[self.reviews  valueForKey:@"result"] objectAtIndex:indexPath.row/2] valueForKey:@"review"];
+        
+        CGSize lableWidth = CGSizeMake(300, CGFLOAT_MAX); // 300 is fixed width of label. You can change this value
+     
+        CGRect requiredSize = [yourText boundingRectWithSize:lableWidth options:NSStringDrawingUsesLineFragmentOrigin attributes:@{NSFontAttributeName:[UIFont fontWithName:@"Times New Roman" size:19]} context:nil];
+        // Here, you will have to use this requiredSize and based on that, adjust height of your cell. I have added 10 on total required height of label and it will have 5 pixels of padding on top and bottom. You can change this too.
+        int calculatedHeight = requiredSize.size.height+10;
+        return (float)calculatedHeight;
     }
 }
 
@@ -85,9 +93,26 @@
         cell.userInteractionEnabled = NO;
     }
     else{
-        cell.backgroundColor = [UIColor grayColor];
+        cell.backgroundColor = [UIColor colorWithWhite:0.5 alpha:0.2];
         cell.userInteractionEnabled = YES;
-
+        //cell.textLabel.text = [[[self.reviews  valueForKey:@"result"] objectAtIndex:indexPath.row/2] valueForKey:@"review"];
+        //cell.textLabel.numberOfLines = 0;
+        //[cell.textLabel setLineBreakMode:NSLineBreakByWordWrapping];
+        
+        UILabel *doctorSpeciality = (UILabel *)[cell viewWithTag:5];
+        doctorSpeciality.text = [[[self.reviews  valueForKey:@"result"] objectAtIndex:indexPath.row/2] valueForKey:@"socialId"];
+        
+        UILabel *review = (UILabel *)[cell viewWithTag:6];
+        review.text = [[[self.reviews  valueForKey:@"result"] objectAtIndex:indexPath.row/2] valueForKey:@"review"];
+        [review setLineBreakMode:NSLineBreakByWordWrapping];
+        
+        RateView* rv = [RateView rateViewWithRating:4];
+        rv.starSize = 15;
+        rv.rating = [[self.reviews valueForKey:@"doctorRating"] floatValue]/2;
+        rv.starFillColor = [UIColor yellowColor];
+        rv.starNormalColor = [UIColor whiteColor];
+        rv.starBorderColor = [UIColor orangeColor];
+        [[cell viewWithTag:7] addSubview:rv];
     }
     return cell;
 }

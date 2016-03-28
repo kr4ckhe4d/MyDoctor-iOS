@@ -24,8 +24,8 @@ UISearchBar *searchBar;
 UITextField *textField;
 UIButton *cancelButton;
 UITableView *testView;
-NSURLSessionDataTask *downloadTask;
 
+NSURLSessionDataTask *downloadTask;
 NSDictionary *searchResult;
 NSDictionary *reviews;
 NSInteger row;
@@ -36,6 +36,7 @@ NSURLSessionConfiguration *sessionConfig;
 NSURLSession *session;
 NSURLSessionDownloadTask *getImageTask;
 UIImage *downloadedImage;
+UIImageView *icon;
 @implementation MainViewController
 
 - (void)viewDidLoad {
@@ -101,6 +102,12 @@ UIImage *downloadedImage;
     tableViewTapped.cancelsTouchesInView = NO;
     [self.tableView addGestureRecognizer:tableViewTapped];
     
+    
+    icon = [[UIImageView alloc] init];
+    [icon setImage:[UIImage imageNamed:@"searchIcon"]];
+    [icon setFrame:CGRectMake(textField.frame.size.width-textField.frame.size.height, 0.0f, textField.frame.size.height, textField.frame.size.height)];
+    [icon setBackgroundColor:[UIColor clearColor]];
+    [textField addSubview:icon];
     [super viewDidLoad];
     // Do any additional setup after loading the view.
 }
@@ -149,12 +156,15 @@ UIImage *downloadedImage;
 }
 
 - (void)keyboardDidShow: (NSNotification *) notif{
+    icon.alpha = 0.02;
     [UIView animateWithDuration:1 delay:0.0 options:UIViewAnimationOptionCurveLinear animations:^{
-        
+    
         [self.tableView setHidden:NO];
         [self.tableView setFrame:CGRectMake(0, 20+textField.frame.size.height, self.view.bounds.size.width, self.view.bounds.size.height)];
         [textField setFrame:CGRectMake(10.0,self.searchBarBackground.frame.size.height/2, self.searchBarBackground.frame.size.width-cancelButton.frame.size.width, 37)];
         [cancelButton setFrame:CGRectMake(self.searchBarBackground.frame.size.width-cancelButton.frame.size.width, textField.frame.size.height/2, 60.0, 37.0)];
+        
+        self.applogo.alpha=0.01;
     } completion:nil];
 }
 
@@ -172,6 +182,8 @@ UIImage *downloadedImage;
         [cancelButton setFrame:CGRectMake(-260.0, 20.0+textField.frame.size.height/2, 60.0, 37.0)];
         [textField setFrame:CGRectMake(10.0, self.view.frame.size.height/2, self.view.frame.size.width-10, 37.0)];
         
+    self.applogo.alpha=1;
+        icon.alpha = 1;
     } completion:nil];
 }
 
