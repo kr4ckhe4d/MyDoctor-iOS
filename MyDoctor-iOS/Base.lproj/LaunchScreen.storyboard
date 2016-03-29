@@ -17,11 +17,19 @@
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="appLogo" translatesAutoresizingMaskIntoConstraints="NO" id="npi-6t-sOb">
-                                <rect key="frame" x="108" y="231" width="105" height="105"/>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="appLogo" translatesAutoresizingMaskIntoConstraints="NO" id="npi-6t-sOb">
+                                <rect key="frame" x="105" y="229" width="110" height="110"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="110" id="TbY-rp-efa"/>
+                                    <constraint firstAttribute="height" constant="110" id="r3B-lc-pa9"/>
+                                </constraints>
                             </imageView>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="npi-6t-sOb" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="pR3-od-XcX"/>
+                            <constraint firstItem="npi-6t-sOb" firstAttribute="centerY" secondItem="Ze5-6b-2t3" secondAttribute="centerY" id="uEj-WX-GTQ"/>
+                        </constraints>
                     </view>
                     <simulatedScreenMetrics key="simulatedDestinationMetrics" type="retina4"/>
                 </viewController>

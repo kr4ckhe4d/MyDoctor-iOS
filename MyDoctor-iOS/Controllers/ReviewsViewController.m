@@ -73,7 +73,7 @@
 -(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
     if (indexPath.row %2 == 1) {
         // Fetch yourText for this row from your data source..
-        return 2;
+        return 10;
     }
     else{
         NSString *yourText = [[[self.reviews  valueForKey:@"result"] objectAtIndex:indexPath.row/2] valueForKey:@"review"];
@@ -82,7 +82,7 @@
      
         CGRect requiredSize = [yourText boundingRectWithSize:lableWidth options:NSStringDrawingUsesLineFragmentOrigin attributes:@{NSFontAttributeName:[UIFont fontWithName:@"Times New Roman" size:19]} context:nil];
         // Here, you will have to use this requiredSize and based on that, adjust height of your cell. I have added 10 on total required height of label and it will have 5 pixels of padding on top and bottom. You can change this too.
-        int calculatedHeight = requiredSize.size.height+10;
+        int calculatedHeight = requiredSize.size.height+55;
         return (float)calculatedHeight;
     }
 }
@@ -100,19 +100,25 @@
         //[cell.textLabel setLineBreakMode:NSLineBreakByWordWrapping];
         
         UILabel *doctorSpeciality = (UILabel *)[cell viewWithTag:5];
-        doctorSpeciality.text = [[[self.reviews  valueForKey:@"result"] objectAtIndex:indexPath.row/2] valueForKey:@"socialId"];
+        doctorSpeciality.text = [NSString stringWithFormat:@"- %@",[[[self.reviews  valueForKey:@"result"] objectAtIndex:indexPath.row/2] valueForKey:@"socialId"]];
         
         UILabel *review = (UILabel *)[cell viewWithTag:6];
         review.text = [[[self.reviews  valueForKey:@"result"] objectAtIndex:indexPath.row/2] valueForKey:@"review"];
         [review setLineBreakMode:NSLineBreakByWordWrapping];
         
+        UILabel *title = (UILabel *)[cell viewWithTag:8];
+        title.text = [[[self.reviews  valueForKey:@"result"] objectAtIndex:indexPath.row/2] valueForKey:@"title"];
+        [title setLineBreakMode:NSLineBreakByWordWrapping];
+        
         RateView* rv = [RateView rateViewWithRating:4];
         rv.starSize = 15;
         rv.rating = [[self.reviews valueForKey:@"doctorRating"] floatValue]/2;
-        rv.starFillColor = [UIColor yellowColor];
+        rv.starFillColor = [UIColor orangeColor];
         rv.starNormalColor = [UIColor whiteColor];
         rv.starBorderColor = [UIColor orangeColor];
         [[cell viewWithTag:7] addSubview:rv];
+        [cell viewWithTag:7].backgroundColor = [UIColor clearColor];
+        cell.userInteractionEnabled = NO;
     }
     return cell;
 }

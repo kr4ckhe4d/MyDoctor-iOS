@@ -20,6 +20,8 @@
 @property (weak, nonatomic) IBOutlet UIButton *btnShowReviews;
 @property (weak, nonatomic) IBOutlet UIButton *btnWriteReview;
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
+@property (weak, nonatomic) IBOutlet UIView *vwProfilePicBackground;
+@property (weak, nonatomic) IBOutlet UIView *vwTopView;
 
 @end
 NSDictionary *doctorInformation;
@@ -27,23 +29,18 @@ NSDictionary *doctorHospitals;
 NSURLSessionDataTask *getJSONTask;
 NSMutableDictionary *imageDictionary;
 NSMutableDictionary *doctorReviews;
+NSMutableString *specialitiesList;
 @implementation DoctorProfileViewController
 
 - (void)viewDidLoad {
     [super viewDidLoad];
     NSLog(@"doc id is %ld",(long)self.doctorId);
-    // Do any additional setup after loading the view.
-}
-
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
-}
-
--(void)viewWillAppear:(BOOL)animated{
-    self.profilePictureBackground.layer.cornerRadius = self.profilePictureBackground.frame.size.width/2;
+    [self.tableView reloadData];
     
-//    UIImageView *profilePic = (UIImageView *)[self.viewContent viewWithTag:5];
+    
+    self.profilePictureBackground.layer.cornerRadius = self.profilePictureBackground.frame.size.height/2;
+    
+    //    UIImageView *profilePic = (UIImageView *)[self.viewContent viewWithTag:5];
     self.doctorPhoto.clipsToBounds = YES;
     self.doctorPhoto.layer.cornerRadius = self.doctorPhoto.frame.size.height / 2;
     self.doctorPhoto.layer.borderWidth = 1.5f;
@@ -56,34 +53,35 @@ NSMutableDictionary *doctorReviews;
     
     // 2
     getJSONTask = [[NSURLSession sharedSession]
-                    dataTaskWithURL:url completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
-                        NSDictionary *json = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
-                        doctorInformation = [NSDictionary dictionaryWithDictionary:json];
-
-                        dispatch_async(dispatch_get_main_queue(), ^{
-                            
-                            doctorInformation = [NSDictionary dictionaryWithDictionary:json];
-                            
-                            NSLog(@"%@", [[doctorInformation valueForKey:@"doctor"] valueForKey:@"profileImage"]);
-                            NSString *imageURL = [[doctorInformation valueForKey:@"doctor"] valueForKey:@"profileImage"];
-                            self.doctorPhoto.image = [self imageNamed:imageURL cache:YES];
-                            self.doctorName.text = [NSString stringWithFormat:@"Dr. %@",[[doctorInformation valueForKey:@"doctor"] valueForKey:@"name"]];
-                            
-                            if ([[doctorInformation valueForKey:@"speciality"] count]!=0) {
-                                
-                            NSMutableString *specialitiesList = [NSMutableString stringWithFormat:@"%@",[[[doctorInformation valueForKey:@"speciality"] objectAtIndex:0] valueForKey:@"specialityName"]];
-                            if ([[doctorInformation valueForKey:@"speciality"] count]>0) {
-                                
-                            for(NSArray *i in [doctorInformation valueForKey:@"speciality"]){
-                                [specialitiesList appendFormat:@", %@",[i valueForKey:@"specialityName"]];
-                            }
-                            }
-                            
-                            self.lblSpecialities.text = specialitiesList;
-                            }
-                        });
-                    }];
-        // 3
+                   dataTaskWithURL:url completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+                       NSDictionary *json = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
+                       doctorInformation = [NSDictionary dictionaryWithDictionary:json];
+                       
+                       dispatch_async(dispatch_get_main_queue(), ^{
+                           
+                           doctorInformation = [NSDictionary dictionaryWithDictionary:json];
+                           
+                           NSLog(@"%@", [[doctorInformation valueForKey:@"doctor"] valueForKey:@"profileImage"]);
+                           NSString *imageURL = [[doctorInformation valueForKey:@"doctor"] valueForKey:@"profileImage"];
+                           self.doctorPhoto.image = [self imageNamed:imageURL cache:YES];
+                           self.doctorName.text = [NSString stringWithFormat:@"Dr. %@",[[doctorInformation valueForKey:@"doctor"] valueForKey:@"name"]];
+                           
+                           if ([[doctorInformation valueForKey:@"speciality"] count]!=0) {
+                               
+                               specialitiesList = [NSMutableString stringWithFormat:@"%@",[[[doctorInformation valueForKey:@"speciality"] objectAtIndex:0] valueForKey:@"specialityName"]];
+                               
+                               //if ([[doctorInformation valueForKey:@"speciality"] count]>0) {
+                               
+                               //                            for(NSArray *i in [doctorInformation valueForKey:@"speciality"]){
+                               //                                [specialitiesList appendFormat:@", %@",[i valueForKey:@"specialityName"]];
+                               //                            }
+                               //}
+                               [self.tableView reloadData];
+                               self.lblSpecialities.text = specialitiesList;
+                           }
+                       });
+                   }];
+    // 3
     [getJSONTask resume];
     
     RateView* rv = [RateView rateViewWithRating:4];
@@ -93,11 +91,21 @@ NSMutableDictionary *doctorReviews;
     rv.starFillColor = [UIColor orangeColor];
     rv.starNormalColor = [UIColor whiteColor];
     rv.starBorderColor = [UIColor orangeColor];
-    rv.center = CGPointMake(self.ratingsView.frame.size.width/2, self.ratingsView.frame.size.height/2);
+    rv.center = CGPointMake(self.view.frame.size.width/2, self.ratingsView.frame.size.height/2);
     [self.ratingsView addSubview:rv];
     
     self.btnShowReviews.layer.cornerRadius = 3;
     self.btnWriteReview.layer.cornerRadius = 3;
+    // Do any additional setup after loading the view.
+}
+
+- (void)didReceiveMemoryWarning {
+    [super didReceiveMemoryWarning];
+    // Dispose of any resources that can be recreated.
+}
+
+-(void)viewWillAppear:(BOOL)animated{
+    
 }
 
 #pragma mark - button actions
@@ -169,13 +177,13 @@ NSMutableDictionary *doctorReviews;
         cell.userInteractionEnabled = NO;
     }
     else{
-        cell.backgroundColor = [UIColor colorWithWhite:0.8 alpha:0.5];
+        cell.backgroundColor = [UIColor colorWithWhite:0.5 alpha:0.5];
         //cell.alpha = 0.3;
         UIImageView *rightArrow = (UIImageView *)[cell viewWithTag:5];
         //rightArrow.frame = CGRectMake(cell.frame.size.width-cell.frame.size.height/2, cell.frame.size.height/2, 2, 2);
         rightArrow.image = [UIImage imageNamed:@"rightArrow"];
         cell.userInteractionEnabled = YES;
-        cell.textLabel.text = [[[doctorInformation valueForKey:@"hospital"] objectAtIndex:indexPath.row] valueForKey:@"name"];
+        cell.textLabel.text = [[[doctorInformation valueForKey:@"hospital"] objectAtIndex:indexPath.row/2] valueForKey:@"name"];
         cell.textLabel.textColor = [UIColor blackColor];
 
 

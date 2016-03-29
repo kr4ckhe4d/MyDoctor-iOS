@@ -236,37 +236,36 @@ UIImageView *icon;
 #pragma mark - table view delegate methods
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{
-    return [[searchResult valueForKey:@"result"] count];
+    NSLog(@"%lu",[[searchResult valueForKey:@"result"] count]*2);
+    return [[searchResult valueForKey:@"result"] count]*2;
 }
 
-- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
-{
-    return 1;
-}
-
-- (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section
-{
-    return 5;
-}
-
-- (UIView *)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section
-{
-    UIView *viewForFooter = [UIView new];
-    [viewForFooter setBackgroundColor:[UIColor clearColor]];
-    return viewForFooter;
+-(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
+    if (indexPath.row%2==1) {
+        return 5;
+    }
+    else{
+        return 65;
+    }
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
     
     UITableViewCell *cell =[tableView dequeueReusableCellWithIdentifier:@"Cell" forIndexPath:indexPath];
+    if (indexPath.row%2==1) {
+        cell.backgroundColor = [UIColor clearColor];
+        cell.userInteractionEnabled = NO;
+        cell.accessoryType = UITableViewCellSelectionStyleNone;
+    }
+    else{
     cell.layer.cornerRadius = cell.frame.size.height/2;
     cell.backgroundColor = [UIColor whiteColor];
     
     UILabel *doctorName = (UILabel *)[cell viewWithTag:1];
-    doctorName.text = [[[[searchResult valueForKey:@"result"] objectAtIndex:indexPath.row] valueForKey:@"doctor"] valueForKey:@"name"];
+    doctorName.text = [[[[searchResult valueForKey:@"result"] objectAtIndex:indexPath.row/2] valueForKey:@"doctor"] valueForKey:@"name"];
     
     NSMutableString *specialitiesList = [NSMutableString stringWithFormat:@""];
-    for(NSArray *i in [[[searchResult valueForKey:@"result"] objectAtIndex:indexPath.row] valueForKey:@"speciality"]){
+    for(NSArray *i in [[[searchResult valueForKey:@"result"] objectAtIndex:indexPath.row/2] valueForKey:@"speciality"]){
         [specialitiesList appendFormat:@"%@, ",[i valueForKey:@"specialityName"]];
     }
 
@@ -279,11 +278,11 @@ UIImageView *icon;
     doctorPhoto.layer.borderWidth = 1.5f;
     doctorPhoto.layer.borderColor = [UIColor grayColor].CGColor;
     
-    NSString *imageURL = [[[[searchResult valueForKey:@"result"] objectAtIndex:indexPath.row] valueForKey:@"doctor"] valueForKey:@"profileImage"];
+    NSString *imageURL = [[[[searchResult valueForKey:@"result"] objectAtIndex:indexPath.row/2] valueForKey:@"doctor"] valueForKey:@"profileImage"];
     
     RateView* rv = [RateView rateViewWithRating:4];
     //rv.rating = 3.4;
-    int docId = [[[[[searchResult valueForKey:@"result"] objectAtIndex:indexPath.row] valueForKey:@"doctor"] valueForKey:@"id"] intValue];
+    int docId = [[[[[searchResult valueForKey:@"result"] objectAtIndex:indexPath.row/2] valueForKey:@"doctor"] valueForKey:@"id"] intValue];
     NSLog(@"doctir id is %d",docId);
     rv.starSize = 15;
     rv.rating = [self getDoctorRating:docId]/2;
@@ -295,6 +294,7 @@ UIImageView *icon;
     UIImage *doctorImage = [self imageNamed:imageURL cache:YES];
     doctorPhoto.image = doctorImage;
     downloadedImage = doctorImage;
+    }
     return cell;
 }
 
@@ -319,7 +319,7 @@ UIImageView *icon;
     NSIndexPath *indexPath = [self.tableView indexPathForSelectedRow];
    // NSLog(@"%ld",[[[[[searchResult valueForKey:@"result"] objectAtIndex:indexPath.row] valueForKey:@"doctor"] valueForKey:@"id"] integerValue]);
     DoctorProfileViewController *doctorProfileViewController = (DoctorProfileViewController *)segue.destinationViewController;
-    doctorProfileViewController.doctorId = [[[[[searchResult valueForKey:@"result"] objectAtIndex:indexPath.row] valueForKey:@"doctor"] valueForKey:@"id"] integerValue];
+    doctorProfileViewController.doctorId = [[[[[searchResult valueForKey:@"result"] objectAtIndex:indexPath.row/2] valueForKey:@"doctor"] valueForKey:@"id"] integerValue];
 }
 
 #pragma mark - hide keyboard
