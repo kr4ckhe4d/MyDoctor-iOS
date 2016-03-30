@@ -39,6 +39,6 @@
         </scene>
     </scenes>
     <resources>
-        <image name="appLogo" width="566" height="682"/>
+        <image name="appLogo" width="120" height="154"/>
     </resources>
 </document>

@@ -10,18 +10,27 @@
 #import "RateView.h"
 #import "ReviewsViewController.h"
 
-@interface DoctorProfileViewController ()<UITableViewDataSource,UITableViewDelegate>
+@interface DoctorProfileViewController ()<UITableViewDataSource,UITableViewDelegate,UITextViewDelegate>
+
 @property (weak, nonatomic) IBOutlet UIView *profilePictureBackground;
-@property (weak, nonatomic) IBOutlet UIImageView *doctorPhoto;
 @property (weak, nonatomic) IBOutlet UIView *viewContent;
-@property (weak, nonatomic) IBOutlet UILabel *doctorName;
-@property (weak, nonatomic) IBOutlet UILabel *lblSpecialities;
-@property (weak, nonatomic) IBOutlet UIView *ratingsView;
-@property (weak, nonatomic) IBOutlet UIButton *btnShowReviews;
-@property (weak, nonatomic) IBOutlet UIButton *btnWriteReview;
-@property (weak, nonatomic) IBOutlet UITableView *tableView;
 @property (weak, nonatomic) IBOutlet UIView *vwProfilePicBackground;
 @property (weak, nonatomic) IBOutlet UIView *vwTopView;
+@property (weak, nonatomic) IBOutlet UIView *writeReviewView;
+@property (weak, nonatomic) IBOutlet UIView *ratingsView;
+@property (weak, nonatomic) IBOutlet UIView *vwWriteReviewBackground;
+
+@property (weak, nonatomic) IBOutlet UIImageView *doctorPhoto;
+
+@property (weak, nonatomic) IBOutlet UILabel *doctorName;
+@property (weak, nonatomic) IBOutlet UILabel *lblSpecialities;
+
+@property (weak, nonatomic) IBOutlet UIButton *btnShowReviews;
+@property (weak, nonatomic) IBOutlet UIButton *btnWriteReview;
+
+@property (weak, nonatomic) IBOutlet UITextView *textView;
+@property (weak, nonatomic) IBOutlet UITableView *tableView;
+@property (weak, nonatomic) IBOutlet UITextField *reviewTitle;
 
 @end
 NSDictionary *doctorInformation;
@@ -36,7 +45,9 @@ NSMutableString *specialitiesList;
     [super viewDidLoad];
     NSLog(@"doc id is %ld",(long)self.doctorId);
     [self.tableView reloadData];
-    
+    [self.writeReviewView setHidden:YES];
+    [self.vwWriteReviewBackground setHidden:YES];
+    //[[self.writeReviewView viewWithTag:7] setBackgroundColor:[UIColor colorWithPatternImage:[UIImage imageNamed:@"ruledLines"]]];
     
     self.profilePictureBackground.layer.cornerRadius = self.profilePictureBackground.frame.size.height/2;
     
@@ -111,6 +122,45 @@ NSMutableString *specialitiesList;
 #pragma mark - button actions
 - (IBAction)btnBack:(id)sender {
     [self dismissViewControllerAnimated:YES completion:nil];
+}
+- (IBAction)btnWriteReview:(id)sender {
+    [self.vwWriteReviewBackground setBackgroundColor:[UIColor colorWithWhite:0 alpha:0.2]];
+    
+    self.textView.delegate = self;
+    self.textView.text = @"placeholder text here...";
+    self.textView.textColor = [UIColor lightGrayColor]; //optional
+    
+    RateView* rv = [RateView rateViewWithRating:0];
+    rv.starSize = [self.writeReviewView viewWithTag:6].frame.size.height;
+    //rv.rating = [self getDoctorRating:(int)self.doctorId]/2;
+    rv.canRate = YES;
+    rv.starFillColor = [UIColor orangeColor];
+    rv.starNormalColor = [UIColor whiteColor];
+    rv.starBorderColor = [UIColor orangeColor];
+    rv.center = CGPointMake([self.writeReviewView viewWithTag:6].frame.size.width/2, [self.writeReviewView viewWithTag:6].frame.size.height/2);
+    [[self.writeReviewView viewWithTag:6] addSubview:rv];
+    
+    // Search TextField
+    [self.reviewTitle setPlaceholder:@"Search by name"];
+    [self.reviewTitle setBackgroundColor:[UIColor greenColor]];
+    
+    // Setting up the bottom border line of the search TextField
+    CALayer *border = [CALayer layer];
+    CGFloat borderWidth = 2;
+    border.borderColor = [UIColor orangeColor].CGColor;
+    border.frame = CGRectMake(0, self.reviewTitle.frame.size.height - borderWidth, self.reviewTitle.frame.size.width, self.reviewTitle.frame.size.height);
+    border.borderWidth = borderWidth;
+    [self.reviewTitle.layer addSublayer:border];
+    self.reviewTitle.layer.masksToBounds = YES;
+    self.reviewTitle.backgroundColor = [UIColor clearColor];
+    
+    [UIView animateWithDuration:1 delay:0.0 options:UIViewAnimationOptionCurveLinear animations:^{
+        
+        [self.writeReviewView setHidden:NO];
+        [self.vwWriteReviewBackground setHidden:NO];
+        //[self.writeReviewView setFrame:CGRectMake(20.0, self.vwTopView.center.y, self.view.bounds.size.width-40,self.view.bounds.size.height-(20+self.vwTopView.frame.size.height/2))];
+    } completion:nil];
+
 }
 
 - (IBAction)btnShowReviews:(id)sender {
@@ -194,6 +244,31 @@ NSMutableString *specialitiesList;
 
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
     NSLog(@"Row number is: %ld", indexPath.row/2);
+}
+
+#pragma mark - hide keyboard
+
+- (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
+    [self.view endEditing:YES];
+}
+
+#pragma mark - keyboard actions
+- (void)textViewDidBeginEditing:(UITextView *)textView
+{
+    if ([textView.text isEqualToString:@"placeholder text here..."]) {
+        textView.text = @"";
+        textView.textColor = [UIColor blackColor]; //optional
+    }
+    [textView becomeFirstResponder];
+}
+
+- (void)textViewDidEndEditing:(UITextView *)textView
+{
+    if ([textView.text isEqualToString:@""]) {
+        textView.text = @"placeholder text here...";
+        textView.textColor = [UIColor lightGrayColor]; //optional
+    }
+    [textView resignFirstResponder];
 }
 /*
 #pragma mark - Navigation

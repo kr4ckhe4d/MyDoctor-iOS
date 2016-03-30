@@ -62,9 +62,9 @@ UIImageView *icon;
     [self.background addSubview:effectView];
     
     // Cancel button of search
-    cancelButton = [[UIButton alloc] initWithFrame:CGRectMake(-260.0, 20.0+self.searchBarBackground.frame.size.height/2, 60.0, 37.0)];
+    cancelButton = [[UIButton alloc] initWithFrame:CGRectMake(-260.0, 20.0+self.searchBarBackground.frame.size.height/2, 37.0, 37.0)];
     [self.view addSubview:cancelButton];
-    [cancelButton setTitle:@"Cancel" forState:UIControlStateNormal];
+    [cancelButton setImage:[UIImage imageNamed:@"cancelButton"] forState:UIControlStateNormal];
     [cancelButton setTitleColor:[UIColor blueColor] forState:UIControlStateNormal];
     [cancelButton addTarget:self
                action:@selector(cancelButtonAction:)
@@ -161,8 +161,8 @@ UIImageView *icon;
     
         [self.tableView setHidden:NO];
         [self.tableView setFrame:CGRectMake(0, 20+textField.frame.size.height, self.view.bounds.size.width, self.view.bounds.size.height)];
-        [textField setFrame:CGRectMake(10.0,self.searchBarBackground.frame.size.height/2, self.searchBarBackground.frame.size.width-cancelButton.frame.size.width, 37)];
-        [cancelButton setFrame:CGRectMake(self.searchBarBackground.frame.size.width-cancelButton.frame.size.width, textField.frame.size.height/2, 60.0, 37.0)];
+        [textField setFrame:CGRectMake(10.0,self.searchBarBackground.frame.size.height/2, self.searchBarBackground.frame.size.width-37.0, 37.0)];
+        [cancelButton setFrame:CGRectMake(self.searchBarBackground.frame.size.width-37.0, textField.frame.size.height/2, 37.0, 37.0)];
         
         self.applogo.alpha=0.01;
     } completion:nil];
@@ -308,7 +308,7 @@ UIImageView *icon;
     
     [UIView animateWithDuration:0.3 delay:0.0 options:UIViewAnimationOptionCurveLinear animations:^{
         
-        [cancelButton setFrame:CGRectMake(-260.0, 20.0+textField.frame.size.height/2, 60.0, 37.0)];
+        [cancelButton setFrame:CGRectMake(-260.0, 20.0+textField.frame.size.height/2, 37.0, 37.0)];
         [textField setFrame:CGRectMake(10.0, self.view.frame.size.height/2, self.view.frame.size.width-10, 37.0)];
         
     } completion:nil];

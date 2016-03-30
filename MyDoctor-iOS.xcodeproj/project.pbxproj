@@ -17,6 +17,7 @@
 		7CE74E0C1C993E2C002DD59C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7CE74E0B1C993E2C002DD59C /* Assets.xcassets */; };
 		7CE74E0F1C993E2C002DD59C /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7CE74E0D1C993E2C002DD59C /* LaunchScreen.storyboard */; };
 		7CE74E181C996BF3002DD59C /* MainViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7CE74E171C996BF3002DD59C /* MainViewController.m */; };
+		7CF4D5081CABA00C008F1F51 /* THNotesTextView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7CF4D5071CABA00C008F1F51 /* THNotesTextView.m */; };
 		A0D2A29C3620094BEABDCFF3 /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2BCF8C8A0EE8FAA629B21AE7 /* libPods.a */; };
 /* End PBXBuildFile section */
 
@@ -39,6 +40,8 @@
 		7CE74E101C993E2C002DD59C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		7CE74E161C996BF3002DD59C /* MainViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MainViewController.h; path = Controllers/MainViewController.h; sourceTree = "<group>"; };
 		7CE74E171C996BF3002DD59C /* MainViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MainViewController.m; path = Controllers/MainViewController.m; sourceTree = "<group>"; };
+		7CF4D5061CABA00C008F1F51 /* THNotesTextView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = THNotesTextView.h; sourceTree = "<group>"; };
+		7CF4D5071CABA00C008F1F51 /* THNotesTextView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = THNotesTextView.m; sourceTree = "<group>"; };
 		F3FCB7A8662D7949E8E232E0 /* Pods.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.release.xcconfig; path = "Pods/Target Support Files/Pods/Pods.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -92,6 +95,7 @@
 		7CE74DFB1C993E2C002DD59C /* MyDoctor-iOS */ = {
 			isa = PBXGroup;
 			children = (
+				7CF4D5051CABA00C008F1F51 /* THNotesTextView */,
 				7CE74E191C996BF8002DD59C /* Controllers */,
 				7CE74DFF1C993E2C002DD59C /* AppDelegate.h */,
 				7CE74E001C993E2C002DD59C /* AppDelegate.m */,
@@ -125,6 +129,15 @@
 				7CD96E881CA3EEDA00E0D918 /* ReviewsViewController.m */,
 			);
 			name = Controllers;
+			sourceTree = "<group>";
+		};
+		7CF4D5051CABA00C008F1F51 /* THNotesTextView */ = {
+			isa = PBXGroup;
+			children = (
+				7CF4D5061CABA00C008F1F51 /* THNotesTextView.h */,
+				7CF4D5071CABA00C008F1F51 /* THNotesTextView.m */,
+			);
+			path = THNotesTextView;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -256,6 +269,7 @@
 				7CE74E011C993E2C002DD59C /* AppDelegate.m in Sources */,
 				7CE74DFE1C993E2C002DD59C /* main.m in Sources */,
 				7CE74E181C996BF3002DD59C /* MainViewController.m in Sources */,
+				7CF4D5081CABA00C008F1F51 /* THNotesTextView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
