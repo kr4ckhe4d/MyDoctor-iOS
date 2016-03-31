@@ -9,8 +9,8 @@
 #import "THNotesTextView.h"
 
 #define DEFAULT_VERTICAL_COLOR      [UIColor clearColor]
-#define DEFAULT_HORIZONTAL_COLOR    [UIColor colorWithRed:255.0/255.0 green:214.0/255.0 blue:207.0/255.0 alpha:1.0f]
-#define DEFAULT_MARGINS             UIEdgeInsetsMake(0.0f, 0.0f, 0.0f, 0.0f)
+#define DEFAULT_HORIZONTAL_COLOR    [UIColor orangeColor]
+#define DEFAULT_MARGINS             UIEdgeInsetsMake(10.0f, 0.0f, 0.0f, 0.0f)
 
 @implementation THNotesTextView
 
@@ -103,7 +103,7 @@
     CGContextRef context = UIGraphicsGetCurrentContext();
     CGFloat lineSpacing = 1.01f;
     if (self.horizontalLineColor) {
-        CGContextSetLineWidth(context, 1.0f);
+        CGContextSetLineWidth(context, 1.4f);
         if ([self isDottedLines]) {
             CGFloat dash[] = {1.0, 1.0};
             CGContextSetLineDash(context, 0.0, dash, 2);
@@ -168,7 +168,7 @@
 }
 
 - (void)keyboardWillHide:(NSNotification*)notification {
-    [self setMargins:DEFAULT_MARGINS];
+    //[self setMargins:DEFAULT_MARGINS];
 }
 
 - (void)keyboardDidChangeFrame:(NSNotification*)notification {
@@ -180,7 +180,7 @@
     keyboardFrameBeginRect.size.width : keyboardFrameBeginRect.size.height;
     tmp.right = tmp.right - tmp.left;
     [self setContentInset:tmp];
-    [self scrollToCaretAnimated:NO];
+    //[self scrollToCaretAnimated:NO];
 }
 
 @end

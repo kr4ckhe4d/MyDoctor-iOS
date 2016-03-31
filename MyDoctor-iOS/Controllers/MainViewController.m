@@ -286,7 +286,7 @@ UIImageView *icon;
     NSLog(@"doctir id is %d",docId);
     rv.starSize = 15;
     rv.rating = [self getDoctorRating:docId]/2;
-    rv.starFillColor = [UIColor yellowColor];
+    rv.starFillColor = [UIColor orangeColor];
     rv.starNormalColor = [UIColor whiteColor];
     rv.starBorderColor = [UIColor orangeColor];
     [[cell viewWithTag:4] addSubview:rv];

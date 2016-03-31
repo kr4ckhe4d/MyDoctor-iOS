@@ -27,6 +27,8 @@
 
 @property (weak, nonatomic) IBOutlet UIButton *btnShowReviews;
 @property (weak, nonatomic) IBOutlet UIButton *btnWriteReview;
+@property (weak, nonatomic) IBOutlet UIButton *btnSubmit;
+@property (weak, nonatomic) IBOutlet UIButton *btnCancel;
 
 @property (weak, nonatomic) IBOutlet UITextView *textView;
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
@@ -39,6 +41,8 @@ NSURLSessionDataTask *getJSONTask;
 NSMutableDictionary *imageDictionary;
 NSMutableDictionary *doctorReviews;
 NSMutableString *specialitiesList;
+
+RateView* ratingInput;
 @implementation DoctorProfileViewController
 
 - (void)viewDidLoad {
@@ -123,25 +127,35 @@ NSMutableString *specialitiesList;
 - (IBAction)btnBack:(id)sender {
     [self dismissViewControllerAnimated:YES completion:nil];
 }
+- (IBAction)btnCancelReview:(id)sender {
+    
+}
+
 - (IBAction)btnWriteReview:(id)sender {
+    self.btnSubmit.layer.cornerRadius = 3.0;
+    self.btnCancel.layer.cornerRadius = 3.0;
+    self.writeReviewView.layer.cornerRadius = 3.0;
+    
+    
+    
     [self.vwWriteReviewBackground setBackgroundColor:[UIColor colorWithWhite:0 alpha:0.2]];
     
     self.textView.delegate = self;
-    self.textView.text = @"placeholder text here...";
-    self.textView.textColor = [UIColor lightGrayColor]; //optional
+    self.textView.text = @"Type your comments here";
+    self.textView.textColor = [UIColor colorWithWhite:0.3 alpha:0.2]; //optional
     
-    RateView* rv = [RateView rateViewWithRating:0];
-    rv.starSize = [self.writeReviewView viewWithTag:6].frame.size.height;
+    ratingInput = [RateView rateViewWithRating:0];
+    ratingInput.starSize = [self.writeReviewView viewWithTag:6].frame.size.height;
     //rv.rating = [self getDoctorRating:(int)self.doctorId]/2;
-    rv.canRate = YES;
-    rv.starFillColor = [UIColor orangeColor];
-    rv.starNormalColor = [UIColor whiteColor];
-    rv.starBorderColor = [UIColor orangeColor];
-    rv.center = CGPointMake([self.writeReviewView viewWithTag:6].frame.size.width/2, [self.writeReviewView viewWithTag:6].frame.size.height/2);
-    [[self.writeReviewView viewWithTag:6] addSubview:rv];
+    ratingInput.canRate = YES;
+    ratingInput.starFillColor = [UIColor orangeColor];
+    ratingInput.starNormalColor = [UIColor whiteColor];
+    ratingInput.starBorderColor = [UIColor orangeColor];
+    ratingInput.center = CGPointMake([self.writeReviewView viewWithTag:6].frame.size.width/2, [self.writeReviewView viewWithTag:6].frame.size.height/2);
+    [[self.writeReviewView viewWithTag:6] addSubview:ratingInput];
     
     // Search TextField
-    [self.reviewTitle setPlaceholder:@"Search by name"];
+    [self.reviewTitle setPlaceholder:@"Review title"];
     [self.reviewTitle setBackgroundColor:[UIColor greenColor]];
     
     // Setting up the bottom border line of the search TextField
@@ -166,6 +180,12 @@ NSMutableString *specialitiesList;
 - (IBAction)btnShowReviews:(id)sender {
     [self performSegueWithIdentifier:@"REVIEWS" sender:self];
 }
+
+- (IBAction)btnSubmit:(id)sender {
+    float x = ratingInput.rating;
+    NSLog(@"rating : %0.1f", x);
+}
+
 
 #pragma mark - prepare for segue
 -(void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender{
@@ -250,12 +270,13 @@ NSMutableString *specialitiesList;
 
 - (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
     [self.view endEditing:YES];
+    [self.textView setContentOffset:CGPointZero animated:YES];
 }
 
 #pragma mark - keyboard actions
 - (void)textViewDidBeginEditing:(UITextView *)textView
 {
-    if ([textView.text isEqualToString:@"placeholder text here..."]) {
+    if ([textView.text isEqualToString:@"Type your comments here"]) {
         textView.text = @"";
         textView.textColor = [UIColor blackColor]; //optional
     }
@@ -265,10 +286,14 @@ NSMutableString *specialitiesList;
 - (void)textViewDidEndEditing:(UITextView *)textView
 {
     if ([textView.text isEqualToString:@""]) {
-        textView.text = @"placeholder text here...";
+        textView.text = @"Type your comments here";
         textView.textColor = [UIColor lightGrayColor]; //optional
     }
     [textView resignFirstResponder];
+}
+
+-(void)textViewDidChange:(UITextView *)textView{
+    NSLog(@"%lu",(unsigned long)self.textView.text.length);
 }
 /*
 #pragma mark - Navigation
