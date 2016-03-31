@@ -174,7 +174,7 @@
 				TargetAttributes = {
 					7CE74DF81C993E2C002DD59C = {
 						CreatedOnToolsVersion = 7.2;
-						DevelopmentTeam = 44T9CE536S;
+						DevelopmentTeam = BNCXQD5JUF;
 					};
 				};
 			};
@@ -386,7 +386,7 @@
 				INFOPLIST_FILE = "MyDoctor-iOS/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = "com.nipunasapp.MyDoctor-iOS";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.nipunasapp1.MyDoctor-iOS";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 			};
@@ -403,7 +403,7 @@
 				INFOPLIST_FILE = "MyDoctor-iOS/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = "com.nipunasapp.MyDoctor-iOS";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.nipunasapp1.MyDoctor-iOS";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 			};

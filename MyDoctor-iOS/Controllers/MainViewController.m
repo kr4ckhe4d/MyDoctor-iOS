@@ -301,17 +301,9 @@ UIImageView *icon;
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
     
     [self performSegueWithIdentifier:@"DOCTOR_PROFILE" sender:self];
-    [self.view endEditing:YES];
-    [self.tableView setHidden:YES];
     
-    textField.text = nil;
     
-    [UIView animateWithDuration:0.3 delay:0.0 options:UIViewAnimationOptionCurveLinear animations:^{
-        
-        [cancelButton setFrame:CGRectMake(-260.0, 20.0+textField.frame.size.height/2, 37.0, 37.0)];
-        [textField setFrame:CGRectMake(10.0, self.view.frame.size.height/2, self.view.frame.size.width-10, 37.0)];
-        
-    } completion:nil];
+    
 }
 
 #pragma mark - prepare for segue
@@ -320,6 +312,20 @@ UIImageView *icon;
    // NSLog(@"%ld",[[[[[searchResult valueForKey:@"result"] objectAtIndex:indexPath.row] valueForKey:@"doctor"] valueForKey:@"id"] integerValue]);
     DoctorProfileViewController *doctorProfileViewController = (DoctorProfileViewController *)segue.destinationViewController;
     doctorProfileViewController.doctorId = [[[[[searchResult valueForKey:@"result"] objectAtIndex:indexPath.row/2] valueForKey:@"doctor"] valueForKey:@"id"] integerValue];
+    
+    
+}
+-(void)viewDidDisappear:(BOOL)animated{
+    [self.view endEditing:YES];
+    [self.tableView setHidden:YES];
+    
+    textField.text = nil;
+    [UIView animateWithDuration:0.3 delay:0.0 options:UIViewAnimationOptionCurveLinear animations:^{
+        
+        [cancelButton setFrame:CGRectMake(-260.0, 20.0+textField.frame.size.height/2, 37.0, 37.0)];
+        [textField setFrame:CGRectMake(10.0, self.view.frame.size.height/2, self.view.frame.size.width-10, 37.0)];
+        
+    } completion:nil];
 }
 
 #pragma mark - hide keyboard
