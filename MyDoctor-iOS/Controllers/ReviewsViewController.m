@@ -23,6 +23,8 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    self.tableView.alwaysBounceVertical = NO;
+
     // Do any additional setup after loading the view.
 }
 
@@ -41,9 +43,7 @@
     
     self.lblDoctorName.text = self.doctorName;
     self.lblDoctorSpecialities.text = self.doctorSpecialities;
-    
-    NSLog(@"%@",self.reviews);
-    
+        
     RateView* rv = [RateView rateViewWithRating:4];
     
     rv.starSize = self.ratingsView.frame.size.height;
@@ -76,13 +76,13 @@
         return 10;
     }
     else{
-        NSString *yourText = [[[self.reviews  valueForKey:@"result"] objectAtIndex:indexPath.row/2] valueForKey:@"review"];
+        NSString *review = [[[self.reviews  valueForKey:@"result"] objectAtIndex:indexPath.row/2] valueForKey:@"review"];
         
         CGSize lableWidth = CGSizeMake(300, CGFLOAT_MAX); // 300 is fixed width of label. You can change this value
      
-        CGRect requiredSize = [yourText boundingRectWithSize:lableWidth options:NSStringDrawingUsesLineFragmentOrigin attributes:@{NSFontAttributeName:[UIFont fontWithName:@"Times New Roman" size:19]} context:nil];
+        CGRect requiredSize = [review boundingRectWithSize:lableWidth options:NSStringDrawingUsesLineFragmentOrigin attributes:@{NSFontAttributeName:[UIFont fontWithName:@"Times New Roman" size:19]} context:nil];
         // Here, you will have to use this requiredSize and based on that, adjust height of your cell. I have added 10 on total required height of label and it will have 5 pixels of padding on top and bottom. You can change this too.
-        int calculatedHeight = requiredSize.size.height+55;
+        int calculatedHeight = requiredSize.size.height+75;
         return (float)calculatedHeight;
     }
 }
@@ -92,7 +92,7 @@
     if (indexPath.row%2 == 1) {
         cell.userInteractionEnabled = NO;
     }
-    else{
+    else if(cell!=nil){
         cell.backgroundColor = [UIColor colorWithWhite:0.5 alpha:0.2];
         cell.userInteractionEnabled = YES;
         //cell.textLabel.text = [[[self.reviews  valueForKey:@"result"] objectAtIndex:indexPath.row/2] valueForKey:@"review"];

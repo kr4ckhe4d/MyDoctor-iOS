@@ -9,6 +9,7 @@
 #import "DoctorProfileViewController.h"
 #import "RateView.h"
 #import "ReviewsViewController.h"
+#import "HospitalProfileViewController.h"
 
 @interface DoctorProfileViewController ()<UITableViewDataSource,UITableViewDelegate,UITextViewDelegate>
 
@@ -47,36 +48,39 @@ RateView* ratingInput;
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    NSLog(@"doc id is %ld",(long)self.doctorId);
+    
+    NSLog(@"Doctor ID is %ld",(long)self.doctorId);
     [self.tableView reloadData];
     [self.writeReviewView setHidden:YES];
     [self.vwWriteReviewBackground setHidden:YES];
-    //[[self.writeReviewView viewWithTag:7] setBackgroundColor:[UIColor colorWithPatternImage:[UIImage imageNamed:@"ruledLines"]]];
+    
+    // Setting doctor's profile picture and its background
     
     self.profilePictureBackground.layer.cornerRadius = self.profilePictureBackground.frame.size.height/2;
     
-    //    UIImageView *profilePic = (UIImageView *)[self.viewContent viewWithTag:5];
     self.doctorPhoto.clipsToBounds = YES;
     self.doctorPhoto.layer.cornerRadius = self.doctorPhoto.frame.size.height / 2;
     self.doctorPhoto.layer.borderWidth = 1.5f;
     self.doctorPhoto.layer.borderColor = [UIColor grayColor].CGColor;
-    //self.doctorPhoto.image = [UIImage imageNamed:@"stethoscope.jpg"];
     
-    // 1
+    // Retrieving doctor details from API
+    
     NSString *dataUrl = [NSString stringWithFormat:@"http://52.58.12.56/dr-app/web/api/doctor/%ld",(long)self.doctorId];
     NSURL *url = [NSURL URLWithString:dataUrl];
     
-    // 2
     getJSONTask = [[NSURLSession sharedSession]
                    dataTaskWithURL:url completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+                       
+                       if(data !=nil){
                        NSDictionary *json = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
+                       
                        doctorInformation = [NSDictionary dictionaryWithDictionary:json];
                        
                        dispatch_async(dispatch_get_main_queue(), ^{
                            
                            doctorInformation = [NSDictionary dictionaryWithDictionary:json];
                            
-                           NSLog(@"%@", [[doctorInformation valueForKey:@"doctor"] valueForKey:@"profileImage"]);
+                           NSLog(@"Doctor profile picture URL: %@", [[doctorInformation valueForKey:@"doctor"] valueForKey:@"profileImage"]);
                            NSString *imageURL = [[doctorInformation valueForKey:@"doctor"] valueForKey:@"profileImage"];
                            self.doctorPhoto.image = [self imageNamed:imageURL cache:YES];
                            self.doctorName.text = [NSString stringWithFormat:@"Dr. %@",[[doctorInformation valueForKey:@"doctor"] valueForKey:@"name"]];
@@ -84,23 +88,18 @@ RateView* ratingInput;
                            if ([[doctorInformation valueForKey:@"speciality"] count]!=0) {
                                
                                specialitiesList = [NSMutableString stringWithFormat:@"%@",[[[doctorInformation valueForKey:@"speciality"] objectAtIndex:0] valueForKey:@"specialityName"]];
-                               
-                               //if ([[doctorInformation valueForKey:@"speciality"] count]>0) {
-                               
-                               //                            for(NSArray *i in [doctorInformation valueForKey:@"speciality"]){
-                               //                                [specialitiesList appendFormat:@", %@",[i valueForKey:@"specialityName"]];
-                               //                            }
-                               //}
+                            
                                [self.tableView reloadData];
                                self.lblSpecialities.text = specialitiesList;
                            }
                        });
+                   }
                    }];
-    // 3
     [getJSONTask resume];
     
-    RateView* rv = [RateView rateViewWithRating:4];
+    // Set up doctors rating view
     
+    RateView* rv = [RateView rateViewWithRating:4];
     rv.starSize = self.ratingsView.frame.size.height;
     rv.rating = [self getDoctorRating:(int)self.doctorId]/2;
     rv.starFillColor = [UIColor orangeColor];
@@ -109,6 +108,7 @@ RateView* ratingInput;
     rv.center = CGPointMake(self.view.frame.size.width/2, self.ratingsView.frame.size.height/2);
     [self.ratingsView addSubview:rv];
     
+    // Set button corner radius
     self.btnShowReviews.layer.cornerRadius = 3;
     self.btnWriteReview.layer.cornerRadius = 3;
     // Do any additional setup after loading the view.
@@ -120,7 +120,7 @@ RateView* ratingInput;
 }
 
 -(void)viewWillAppear:(BOOL)animated{
-    
+    self.writeReviewView.frame = CGRectMake(self.writeReviewView.frame.origin.x, self.writeReviewView.frame.origin.y+500, self.writeReviewView.frame.size.width, self.writeReviewView.frame.size.height);
 }
 
 #pragma mark - button actions
@@ -128,6 +128,14 @@ RateView* ratingInput;
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 - (IBAction)btnCancelReview:(id)sender {
+    [UIView animateWithDuration:0.3 delay:0.0 options:UIViewAnimationOptionCurveLinear animations:^{
+        [self.writeReviewView setFrame:CGRectMake(self.writeReviewView.frame.origin.x, self.writeReviewView.frame.origin.y+500, self.writeReviewView.frame.size.width, self.writeReviewView.frame.size.height)];
+        
+        //[self.writeReviewView setHidden:YES];
+        [self.vwWriteReviewBackground setHidden:YES];
+    } completion:^(BOOL finished) {
+        [self.writeReviewView setHidden:YES];
+    }];
     
 }
 
@@ -168,11 +176,14 @@ RateView* ratingInput;
     self.reviewTitle.layer.masksToBounds = YES;
     self.reviewTitle.backgroundColor = [UIColor clearColor];
     
-    [UIView animateWithDuration:1 delay:0.0 options:UIViewAnimationOptionCurveLinear animations:^{
+    [UIView animateWithDuration:0.3 delay:0.0 options:UIViewAnimationOptionCurveLinear animations:^{
         
         [self.writeReviewView setHidden:NO];
         [self.vwWriteReviewBackground setHidden:NO];
-        //[self.writeReviewView setFrame:CGRectMake(20.0, self.vwTopView.center.y, self.view.bounds.size.width-40,self.view.bounds.size.height-(20+self.vwTopView.frame.size.height/2))];
+        
+        [self.writeReviewView setFrame:CGRectMake(self.writeReviewView.frame.origin.x, self.writeReviewView.frame.origin.y-500, self.writeReviewView.frame.size.width, self.writeReviewView.frame.size.height)];
+
+        
     } completion:nil];
 
 }
@@ -183,17 +194,32 @@ RateView* ratingInput;
 
 - (IBAction)btnSubmit:(id)sender {
     float x = ratingInput.rating;
-    NSLog(@"rating : %0.1f", x);
+    NSLog(@"Rating : %0.1f", x);
 }
 
 
 #pragma mark - prepare for segue
 -(void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender{
-    ReviewsViewController *reviewsViewController = (ReviewsViewController *)segue.destinationViewController;
-    reviewsViewController.theImage = self.doctorPhoto.image;
-    reviewsViewController.doctorName = self.doctorName.text = [NSString stringWithFormat:@"Dr. %@",[[doctorInformation valueForKey:@"doctor"] valueForKey:@"name"]];
-    reviewsViewController.doctorSpecialities = self.lblSpecialities.text;
-    reviewsViewController.reviews = [NSDictionary dictionaryWithDictionary:doctorReviews];
+    if([segue.identifier isEqualToString:@"REVIEWS"]){
+        ReviewsViewController *reviewsViewController = (ReviewsViewController *)segue.destinationViewController;
+        reviewsViewController.theImage = self.doctorPhoto.image;
+        reviewsViewController.doctorName = self.doctorName.text = [NSString stringWithFormat:@"Dr. %@",[[doctorInformation valueForKey:@"doctor"] valueForKey:@"name"]];
+        reviewsViewController.doctorSpecialities = self.lblSpecialities.text;
+        reviewsViewController.reviews = [NSDictionary dictionaryWithDictionary:doctorReviews];
+    }
+    else if([segue.identifier isEqualToString:@"HOSPITAL_PROFILE"]){
+        NSIndexPath *indexPath = [self.tableView indexPathForSelectedRow];
+        HospitalProfileViewController *hospitalProfileViewController = (HospitalProfileViewController *)segue.destinationViewController;
+        NSDictionary *dic = [NSDictionary dictionaryWithDictionary:[[doctorInformation valueForKey:@"hospital"] objectAtIndex:indexPath.row/2]];
+       // NSLog(@"Hospital id is: %@", dic);
+        hospitalProfileViewController.passedDictionary = dic;
+        
+        
+    }
+    
+    
+    
+    
 }
 
 #pragma mark - custom methods
@@ -258,12 +284,14 @@ RateView* ratingInput;
 
 
     }
-    //NSLog(@"%@",doctorInformation);
     return cell;
 }
 
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
-    NSLog(@"Row number is: %ld", indexPath.row/2);
+    [self performSegueWithIdentifier:@"HOSPITAL_PROFILE" sender:self];
+    
+   // NSDictionary *dic = [NSDictionary dictionaryWithDictionary:[[doctorInformation valueForKey:@"hospital"] objectAtIndex:indexPath.row/2]];
+   // NSLog(@"Hospital id is: %@", dic);
 }
 
 #pragma mark - hide keyboard
@@ -293,8 +321,9 @@ RateView* ratingInput;
 }
 
 -(void)textViewDidChange:(UITextView *)textView{
-    NSLog(@"%lu",(unsigned long)self.textView.text.length);
+    NSLog(@"Text View characters: %lu",(unsigned long)self.textView.text.length);
 }
+
 /*
 #pragma mark - Navigation
 

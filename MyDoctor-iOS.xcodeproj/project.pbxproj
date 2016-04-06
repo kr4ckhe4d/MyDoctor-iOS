@@ -7,8 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0D1D7D7B1CB25DFA00567429 /* HospitalProfileViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0D1D7D7A1CB25DFA00567429 /* HospitalProfileViewController.m */; };
+		0D2204001CB4FBC400BC9985 /* OpenInGoogleMapsController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0D2203FF1CB4FBC400BC9985 /* OpenInGoogleMapsController.m */; };
 		7C8E89401CA28B4F006DDDF5 /* DoctorProfileViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7C8E893F1CA28B4F006DDDF5 /* DoctorProfileViewController.m */; };
-		7C8E89421CA29BC3006DDDF5 /* stethoscope.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 7C8E89411CA29BC3006DDDF5 /* stethoscope.jpg */; };
 		7CD96E891CA3EEDA00E0D918 /* ReviewsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7CD96E881CA3EEDA00E0D918 /* ReviewsViewController.m */; };
 		7CE74DFE1C993E2C002DD59C /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 7CE74DFD1C993E2C002DD59C /* main.m */; };
 		7CE74E011C993E2C002DD59C /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 7CE74E001C993E2C002DD59C /* AppDelegate.m */; };
@@ -22,11 +23,14 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		0D1D7D791CB25DFA00567429 /* HospitalProfileViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HospitalProfileViewController.h; path = Controllers/HospitalProfileViewController.h; sourceTree = "<group>"; };
+		0D1D7D7A1CB25DFA00567429 /* HospitalProfileViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = HospitalProfileViewController.m; path = Controllers/HospitalProfileViewController.m; sourceTree = "<group>"; };
+		0D2203FE1CB4FBC400BC9985 /* OpenInGoogleMapsController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OpenInGoogleMapsController.h; sourceTree = "<group>"; };
+		0D2203FF1CB4FBC400BC9985 /* OpenInGoogleMapsController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OpenInGoogleMapsController.m; sourceTree = "<group>"; };
 		1D46A78A0FA5928BEDC1C16C /* Pods.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.debug.xcconfig; path = "Pods/Target Support Files/Pods/Pods.debug.xcconfig"; sourceTree = "<group>"; };
 		2BCF8C8A0EE8FAA629B21AE7 /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		7C8E893E1CA28B4F006DDDF5 /* DoctorProfileViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DoctorProfileViewController.h; path = Controllers/DoctorProfileViewController.h; sourceTree = "<group>"; };
 		7C8E893F1CA28B4F006DDDF5 /* DoctorProfileViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = DoctorProfileViewController.m; path = Controllers/DoctorProfileViewController.m; sourceTree = "<group>"; };
-		7C8E89411CA29BC3006DDDF5 /* stethoscope.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = stethoscope.jpg; sourceTree = "<group>"; };
 		7CD96E871CA3EEDA00E0D918 /* ReviewsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ReviewsViewController.h; path = Controllers/ReviewsViewController.h; sourceTree = "<group>"; };
 		7CD96E881CA3EEDA00E0D918 /* ReviewsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ReviewsViewController.m; path = Controllers/ReviewsViewController.m; sourceTree = "<group>"; };
 		7CE74DF91C993E2C002DD59C /* MyDoctor-iOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "MyDoctor-iOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -57,6 +61,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		0D2203FD1CB4FBA400BC9985 /* OpenInGoogleMaps */ = {
+			isa = PBXGroup;
+			children = (
+				0D2203FE1CB4FBC400BC9985 /* OpenInGoogleMapsController.h */,
+				0D2203FF1CB4FBC400BC9985 /* OpenInGoogleMapsController.m */,
+			);
+			name = OpenInGoogleMaps;
+			sourceTree = "<group>";
+		};
 		5BB84E3AC9B7CBC90EF897AD /* Pods */ = {
 			isa = PBXGroup;
 			children = (
@@ -95,11 +108,11 @@
 		7CE74DFB1C993E2C002DD59C /* MyDoctor-iOS */ = {
 			isa = PBXGroup;
 			children = (
+				0D2203FD1CB4FBA400BC9985 /* OpenInGoogleMaps */,
 				7CF4D5051CABA00C008F1F51 /* THNotesTextView */,
 				7CE74E191C996BF8002DD59C /* Controllers */,
 				7CE74DFF1C993E2C002DD59C /* AppDelegate.h */,
 				7CE74E001C993E2C002DD59C /* AppDelegate.m */,
-				7C8E89411CA29BC3006DDDF5 /* stethoscope.jpg */,
 				7CE74E051C993E2C002DD59C /* Main.storyboard */,
 				7CE74E0B1C993E2C002DD59C /* Assets.xcassets */,
 				7CE74E0D1C993E2C002DD59C /* LaunchScreen.storyboard */,
@@ -127,6 +140,8 @@
 				7C8E893F1CA28B4F006DDDF5 /* DoctorProfileViewController.m */,
 				7CD96E871CA3EEDA00E0D918 /* ReviewsViewController.h */,
 				7CD96E881CA3EEDA00E0D918 /* ReviewsViewController.m */,
+				0D1D7D791CB25DFA00567429 /* HospitalProfileViewController.h */,
+				0D1D7D7A1CB25DFA00567429 /* HospitalProfileViewController.m */,
 			);
 			name = Controllers;
 			sourceTree = "<group>";
@@ -204,7 +219,6 @@
 				7CE74E0F1C993E2C002DD59C /* LaunchScreen.storyboard in Resources */,
 				7CE74E0C1C993E2C002DD59C /* Assets.xcassets in Resources */,
 				7CE74E071C993E2C002DD59C /* Main.storyboard in Resources */,
-				7C8E89421CA29BC3006DDDF5 /* stethoscope.jpg in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -266,9 +280,11 @@
 				7C8E89401CA28B4F006DDDF5 /* DoctorProfileViewController.m in Sources */,
 				7CE74E0A1C993E2C002DD59C /* MyDoctor_iOS.xcdatamodeld in Sources */,
 				7CD96E891CA3EEDA00E0D918 /* ReviewsViewController.m in Sources */,
+				0D2204001CB4FBC400BC9985 /* OpenInGoogleMapsController.m in Sources */,
 				7CE74E011C993E2C002DD59C /* AppDelegate.m in Sources */,
 				7CE74DFE1C993E2C002DD59C /* main.m in Sources */,
 				7CE74E181C996BF3002DD59C /* MainViewController.m in Sources */,
+				0D1D7D7B1CB25DFA00567429 /* HospitalProfileViewController.m in Sources */,
 				7CF4D5081CABA00C008F1F51 /* THNotesTextView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

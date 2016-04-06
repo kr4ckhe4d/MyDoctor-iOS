@@ -18,6 +18,7 @@
 @property (weak, nonatomic) IBOutlet UIView *searchBarBackground;
 
 
+@property (weak, nonatomic) IBOutlet UIActivityIndicatorView *activity;
 
 @end
 UISearchBar *searchBar;
@@ -26,7 +27,7 @@ UIButton *cancelButton;
 UITableView *testView;
 
 NSURLSessionDataTask *downloadTask;
-NSDictionary *searchResult;
+NSMutableDictionary *searchResult;
 NSDictionary *reviews;
 NSInteger row;
 
@@ -40,6 +41,7 @@ UIImageView *icon;
 @implementation MainViewController
 
 - (void)viewDidLoad {
+    
     // Set the application logo on the Main view
     self.applogo.image = [UIImage imageNamed:@"appLogo"];
     
@@ -54,12 +56,12 @@ UIImageView *icon;
     self.view.backgroundColor = [UIColor colorWithPatternImage:image];
     
     // create blur effect
-    UIBlurEffect *blur = [UIBlurEffect effectWithStyle:UIBlurEffectStyleLight];
+    //UIBlurEffect *blur = [UIBlurEffect effectWithStyle:UIBlurEffectStyleLight];
     // add effect to an effect view
-    UIVisualEffectView *effectView = [[UIVisualEffectView alloc]initWithEffect:blur];
-    effectView.frame = self.view.frame;
+    //UIVisualEffectView *effectView = [[UIVisualEffectView alloc]initWithEffect:blur];
+    //effectView.frame = self.view.frame;
     // add the effect view to the image view
-    [self.background addSubview:effectView];
+    //[self.background addSubview:effectView];
     
     // Cancel button of search
     cancelButton = [[UIButton alloc] initWithFrame:CGRectMake(-260.0, 20.0+self.searchBarBackground.frame.size.height/2, 37.0, 37.0)];
@@ -80,7 +82,7 @@ UIImageView *icon;
     CALayer *border = [CALayer layer];
     CGFloat borderWidth = 2;
     border.borderColor = [UIColor orangeColor].CGColor;
-    border.frame = CGRectMake(0, textField.frame.size.height - borderWidth, textField.frame.size.width, textField.frame.size.height);
+    border.frame = CGRectMake(-3, textField.frame.size.height - borderWidth-3, textField.frame.size.width, 1);
     border.borderWidth = borderWidth;
     [textField.layer addSublayer:border];
     textField.layer.masksToBounds = YES;
@@ -89,7 +91,12 @@ UIImageView *icon;
     // Search Text Field change event
     [textField addTarget:self
                   action:@selector(textFieldDidChange:)
-        forControlEvents:UIControlEventEditingChanged];
+        forControlEvents:UIControlEventAllEvents];
+    
+//    [[NSNotificationCenter defaultCenter] addObserver:self
+//                                             selector:@selector (textFieldDidChange1:)
+//                                                 name:UITextFieldTextDidChangeNotification
+//                                               object:textField];
     
     // Search TextField keyboardDidShow Action
     [[NSNotificationCenter defaultCenter] addObserver:self
@@ -102,19 +109,26 @@ UIImageView *icon;
     tableViewTapped.cancelsTouchesInView = NO;
     [self.tableView addGestureRecognizer:tableViewTapped];
     
-    
+    // Search bar icon at the end of the UITextField
     icon = [[UIImageView alloc] init];
     [icon setImage:[UIImage imageNamed:@"searchIcon"]];
-    [icon setFrame:CGRectMake(textField.frame.size.width-textField.frame.size.height, 0.0f, textField.frame.size.height, textField.frame.size.height)];
+    [icon setFrame:CGRectMake(textField.frame.size.width-textField.frame.size.height, 0.0f-1, textField.frame.size.height, textField.frame.size.height-2)];
     [icon setBackgroundColor:[UIColor clearColor]];
     [textField addSubview:icon];
     [super viewDidLoad];
     // Do any additional setup after loading the view.
 }
 
+
 -(void)viewWillAppear:(BOOL)animated{
     [self.tableView setHidden:YES];
     [self cancelButtonAction:nil];
+    [self.activity setHidden:YES];
+}
+-(void)viewWillDisappear:(BOOL)animated{
+    [self.tableView setHidden:YES];
+    [self cancelButtonAction:nil];
+    [self.activity setHidden:YES];
 }
 
 #pragma mark - button actions
@@ -197,35 +211,47 @@ UIImageView *icon;
 }
 
 - (void)textFieldDidChange:(id)sender{
+    _activity.frame = CGRectMake(textField.center.x, self.searchBarBackground.frame.size.height/2, 10+textField.frame.size.width-37, 37);
+
     NSInteger numberOfCharacters = [textField.text length];
     if (numberOfCharacters >= 2) {
+        //[searchResult removeAllObjects];
+        [self.activity setHidden:NO];
+        [self.activity startAnimating];
         // 1
         NSString *dataUrl = [NSString stringWithFormat:@"http://52.58.12.56/dr-app/web/api/doctors?keyword=%@",[textField text]];
         NSURL *url = [NSURL URLWithString:dataUrl];
         
         // 2
+        //dispatch_async(dispatch_get_main_queue(), ^{
         downloadTask = [[NSURLSession sharedSession]
                         dataTaskWithURL:url completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+                            
+                            if(data !=nil){
                             NSDictionary *json = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
-                            
+                        
                             dispatch_async(dispatch_get_main_queue(), ^{
-                                
-                            searchResult = [NSDictionary dictionaryWithDictionary:json];
-                            NSLog(@"%@", [[searchResult valueForKey:@"result"] objectAtIndex:0]);
-                            
+                              
+                            searchResult = [NSMutableDictionary dictionaryWithDictionary:json];
+                            //NSLog(@"%@", [[searchResult valueForKey:@"result"] objectAtIndex:0]);
                                 //row = 0;
-                            
+                            [self.activity setHidden:YES];
+                            [self.activity stopAnimating];
                             [self.tableView reloadData];
                                 });
+                            }
                         }];
-        
+                    
+        //});
         // 3
         [downloadTask resume];
-
+        
     }
     else{
-        searchResult = nil;
+        [searchResult removeAllObjects];
         [self.tableView reloadData];
+        [self.activity setHidden:YES];
+        [self.activity stopAnimating];
     }
 }
 
@@ -236,7 +262,7 @@ UIImageView *icon;
 #pragma mark - table view delegate methods
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{
-    NSLog(@"%lu",[[searchResult valueForKey:@"result"] count]*2);
+    //NSLog(@"%u",[[searchResult valueForKey:@"result"] count]*2);
     return [[searchResult valueForKey:@"result"] count]*2;
 }
 
@@ -265,9 +291,13 @@ UIImageView *icon;
     doctorName.text = [[[[searchResult valueForKey:@"result"] objectAtIndex:indexPath.row/2] valueForKey:@"doctor"] valueForKey:@"name"];
     
     NSMutableString *specialitiesList = [NSMutableString stringWithFormat:@""];
-    for(NSArray *i in [[[searchResult valueForKey:@"result"] objectAtIndex:indexPath.row/2] valueForKey:@"speciality"]){
-        [specialitiesList appendFormat:@"%@, ",[i valueForKey:@"specialityName"]];
-    }
+        NSArray *specialities = [[[searchResult valueForKey:@"result"] objectAtIndex:indexPath.row/2] valueForKey:@"speciality"];
+        if(specialities.count!=0){
+        [specialitiesList appendFormat:@"%@",[[specialities objectAtIndex:0] valueForKey:@"specialityName"]];
+        }
+//    for(NSArray *i in [[[searchResult valueForKey:@"result"] objectAtIndex:indexPath.row/2] valueForKey:@"speciality"]){
+//        [specialitiesList appendFormat:@"%@, ",[i valueForKey:@"specialityName"]];
+//    }
 
     UILabel *doctorSpeciality = (UILabel *)[cell viewWithTag:2];
     doctorSpeciality.text = specialitiesList;
@@ -283,7 +313,7 @@ UIImageView *icon;
     RateView* rv = [RateView rateViewWithRating:4];
     //rv.rating = 3.4;
     int docId = [[[[[searchResult valueForKey:@"result"] objectAtIndex:indexPath.row/2] valueForKey:@"doctor"] valueForKey:@"id"] intValue];
-    NSLog(@"doctir id is %d",docId);
+    //NSLog(@"Doctor ID is %d",docId);
     rv.starSize = 15;
     rv.rating = [self getDoctorRating:docId]/2;
     rv.starFillColor = [UIColor orangeColor];
@@ -309,12 +339,11 @@ UIImageView *icon;
 #pragma mark - prepare for segue
 -(void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender{
     NSIndexPath *indexPath = [self.tableView indexPathForSelectedRow];
-   // NSLog(@"%ld",[[[[[searchResult valueForKey:@"result"] objectAtIndex:indexPath.row] valueForKey:@"doctor"] valueForKey:@"id"] integerValue]);
     DoctorProfileViewController *doctorProfileViewController = (DoctorProfileViewController *)segue.destinationViewController;
-    doctorProfileViewController.doctorId = [[[[[searchResult valueForKey:@"result"] objectAtIndex:indexPath.row/2] valueForKey:@"doctor"] valueForKey:@"id"] integerValue];
-    
-    
+    doctorProfileViewController.doctorId = [[[[[searchResult valueForKey:@"result"] objectAtIndex:indexPath.row/2] valueForKey:@"doctor"] valueForKey:@"id"] integerValue];    
 }
+
+#pragma mark - view did disappear
 -(void)viewDidDisappear:(BOOL)animated{
     [self.view endEditing:YES];
     [self.tableView setHidden:YES];
@@ -329,6 +358,7 @@ UIImageView *icon;
 }
 
 #pragma mark - hide keyboard
+
 
 - (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
     [self.view endEditing:YES];

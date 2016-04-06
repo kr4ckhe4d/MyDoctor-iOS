@@ -61,7 +61,7 @@
         .width = contentSize.width - self.margins.left - self.margins.right,
         .height = contentSize.height
     };
-    NSLog(@"width: %f, height %f",contentSize.width,contentSize.height);
+    //NSLog(@"width: %f, height %f",contentSize.width,contentSize.height);
     [super setContentSize:contentSize];
 }
 
