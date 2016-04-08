@@ -9,6 +9,7 @@
 #import "MainViewController.h"
 #import "RateView.h"
 #import "DoctorProfileViewController.h"
+#import "ActivityIndicator.h"
 
 @interface MainViewController ()<UITextFieldDelegate,UITableViewDataSource,UITableViewDelegate>
 @property (weak, nonatomic) IBOutlet UIImageView *background;
@@ -38,92 +39,25 @@ NSURLSession *session;
 NSURLSessionDownloadTask *getImageTask;
 UIImage *downloadedImage;
 UIImageView *icon;
+
+ActivityIndicator *ai;
 @implementation MainViewController
 
 - (void)viewDidLoad {
+    [self initializeMainViewElements];
     
-    // Set the application logo on the Main view
-    self.applogo.image = [UIImage imageNamed:@"appLogo"];
-    
-    // Set search results TableView background alpha
-    [self.tableView setBackgroundColor:[UIColor colorWithWhite:1.0 alpha:0.5]];
-    
-    // Setting Main View background Image
-    UIGraphicsBeginImageContext(self.view.frame.size);
-    [[UIImage imageNamed:@"backgroundImage"] drawInRect:self.view.bounds];
-    UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
-    UIGraphicsEndImageContext();
-    self.view.backgroundColor = [UIColor colorWithPatternImage:image];
-    
-    // create blur effect
-    //UIBlurEffect *blur = [UIBlurEffect effectWithStyle:UIBlurEffectStyleLight];
-    // add effect to an effect view
-    //UIVisualEffectView *effectView = [[UIVisualEffectView alloc]initWithEffect:blur];
-    //effectView.frame = self.view.frame;
-    // add the effect view to the image view
-    //[self.background addSubview:effectView];
-    
-    // Cancel button of search
-    cancelButton = [[UIButton alloc] initWithFrame:CGRectMake(-260.0, 20.0+self.searchBarBackground.frame.size.height/2, 37.0, 37.0)];
-    [self.view addSubview:cancelButton];
-    [cancelButton setImage:[UIImage imageNamed:@"cancelButton"] forState:UIControlStateNormal];
-    [cancelButton setTitleColor:[UIColor blueColor] forState:UIControlStateNormal];
-    [cancelButton addTarget:self
-               action:@selector(cancelButtonAction:)
-     forControlEvents:UIControlEventTouchUpInside];
-    
-    // Search TextField
-    textField = [[UITextField alloc] initWithFrame:CGRectMake(10.0, self.view.frame.size.height/2, self.view.frame.size.width-20, 37.0)];
-    [self.view addSubview:textField];
-    [textField setPlaceholder:@"Search by name"];
-    [textField setBackgroundColor:[UIColor greenColor]];
-   
-    // Setting up the bottom border line of the search TextField
-    CALayer *border = [CALayer layer];
-    CGFloat borderWidth = 2;
-    border.borderColor = [UIColor orangeColor].CGColor;
-    border.frame = CGRectMake(-3, textField.frame.size.height - borderWidth-3, textField.frame.size.width, 1);
-    border.borderWidth = borderWidth;
-    [textField.layer addSublayer:border];
-    textField.layer.masksToBounds = YES;
-    textField.backgroundColor = [UIColor clearColor];
-    
-    // Search Text Field change event
-    [textField addTarget:self
-                  action:@selector(textFieldDidChange:)
-        forControlEvents:UIControlEventAllEvents];
-    
-//    [[NSNotificationCenter defaultCenter] addObserver:self
-//                                             selector:@selector (textFieldDidChange1:)
-//                                                 name:UITextFieldTextDidChangeNotification
-//                                               object:textField];
-    
-    // Search TextField keyboardDidShow Action
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(keyboardDidShow:)
-                                                 name:UIKeyboardWillShowNotification
-                                               object:nil];
-    
-    // Search Results tableView touched action
-    UITapGestureRecognizer *tableViewTapped = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tableViewTapAction:)];
-    tableViewTapped.cancelsTouchesInView = NO;
-    [self.tableView addGestureRecognizer:tableViewTapped];
-    
-    // Search bar icon at the end of the UITextField
-    icon = [[UIImageView alloc] init];
-    [icon setImage:[UIImage imageNamed:@"searchIcon"]];
-    [icon setFrame:CGRectMake(textField.frame.size.width-textField.frame.size.height, 0.0f-1, textField.frame.size.height, textField.frame.size.height-2)];
-    [icon setBackgroundColor:[UIColor clearColor]];
-    [textField addSubview:icon];
     [super viewDidLoad];
     // Do any additional setup after loading the view.
 }
-
 
 -(void)viewWillAppear:(BOOL)animated{
     [self.tableView setHidden:YES];
     [self cancelButtonAction:nil];
     [self.activity setHidden:YES];
+    
+    if (downloadTask==NULL) {
+        [self establishSharedConnection];
+    }
 }
 -(void)viewWillDisappear:(BOOL)animated{
     [self.tableView setHidden:YES];
@@ -185,7 +119,7 @@ UIImageView *icon;
 - (IBAction)cancelButtonAction:(id)sender{
     [self.view endEditing:YES];
     [self.tableView setHidden:YES];
-    
+    [self.activity setHidden:YES];
     
     textField.text = nil;
     searchResult = nil;
@@ -210,6 +144,44 @@ UIImageView *icon;
     return [[reviews valueForKey:@"doctorRating"] integerValue];
 }
 
+- (void)getSearchResult:(NSString *)searchString{
+    
+    NSString *dataUrl = [NSString stringWithFormat:@"http://52.58.12.56/dr-app/web/api/doctors?keyword=%@",searchString];
+    NSURL *url = [NSURL URLWithString:dataUrl];
+    
+    // 2
+    //dispatch_async(dispatch_get_main_queue(), ^{
+    downloadTask = [[NSURLSession sharedSession]
+                    dataTaskWithURL:url completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+                        
+                        if(data !=nil){
+                            NSDictionary *json = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
+                            
+                            dispatch_async(dispatch_get_main_queue(), ^{
+                                
+                                searchResult = [NSMutableDictionary dictionaryWithDictionary:json];
+                                //NSLog(@"%@", [[searchResult valueForKey:@"result"] objectAtIndex:0]);
+                                //row = 0;
+                                [self.activity setHidden:YES];
+                                [self.activity stopAnimating];
+                                [self.tableView reloadData];
+                                if(ai){
+                                    [ai.activitySpinner stopAnimating];
+                                    [ai removeFromSuperview];
+                                    ai = NULL;
+                                }
+                            });
+                        }
+                        else{
+                            NSLog(@"%@",error);
+                        }
+                    }];
+    
+    //});
+    // 3
+    [downloadTask resume];
+}
+
 - (void)textFieldDidChange:(id)sender{
     _activity.frame = CGRectMake(textField.center.x, self.searchBarBackground.frame.size.height/2, 10+textField.frame.size.width-37, 37);
 
@@ -219,36 +191,11 @@ UIImageView *icon;
         [self.activity setHidden:NO];
         [self.activity startAnimating];
         // 1
-        NSString *dataUrl = [NSString stringWithFormat:@"http://52.58.12.56/dr-app/web/api/doctors?keyword=%@",[textField text]];
-        NSURL *url = [NSURL URLWithString:dataUrl];
-        
-        // 2
-        //dispatch_async(dispatch_get_main_queue(), ^{
-        downloadTask = [[NSURLSession sharedSession]
-                        dataTaskWithURL:url completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
-                            
-                            if(data !=nil){
-                            NSDictionary *json = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
-                        
-                            dispatch_async(dispatch_get_main_queue(), ^{
-                              
-                            searchResult = [NSMutableDictionary dictionaryWithDictionary:json];
-                            //NSLog(@"%@", [[searchResult valueForKey:@"result"] objectAtIndex:0]);
-                                //row = 0;
-                            [self.activity setHidden:YES];
-                            [self.activity stopAnimating];
-                            [self.tableView reloadData];
-                                });
-                            }
-                        }];
-                    
-        //});
-        // 3
-        [downloadTask resume];
+        [self getSearchResult:[textField text]];
         
     }
     else{
-        [searchResult removeAllObjects];
+        searchResult = nil;
         [self.tableView reloadData];
         [self.activity setHidden:YES];
         [self.activity stopAnimating];
@@ -257,6 +204,114 @@ UIImageView *icon;
 
 - (void)tableViewTapAction:(UITapGestureRecognizer*)sender {
     [self.view endEditing:YES];
+}
+
+-(void)establishSharedConnection{
+    ai = [[ActivityIndicator alloc] init];
+    [ai.activitySpinner startAnimating];
+    [self.view addSubview:ai];
+    ai.center = self.view.center;
+    ai.view.layer.cornerRadius = 3.0;
+    ai.translatesAutoresizingMaskIntoConstraints = NO;
+    
+    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:ai
+                                                          attribute:NSLayoutAttributeTop
+                                                          relatedBy:NSLayoutRelationEqual
+                                                             toItem:self.view
+                                                          attribute:NSLayoutAttributeTop
+                                                         multiplier:1.0
+                                                           constant:0.0
+                              ]];
+    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:ai
+                                                          attribute:NSLayoutAttributeRight
+                                                          relatedBy:NSLayoutRelationEqual
+                                                             toItem:self.view
+                                                          attribute:NSLayoutAttributeRight
+                                                         multiplier:1.0
+                                                           constant:0.0
+                              ]];
+    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:ai
+                                                          attribute:NSLayoutAttributeLeft
+                                                          relatedBy:NSLayoutRelationEqual
+                                                             toItem:self.view
+                                                          attribute:NSLayoutAttributeLeft
+                                                         multiplier:1.0
+                                                           constant:0.0
+                              ]];
+    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:ai
+                                                          attribute:NSLayoutAttributeBottom
+                                                          relatedBy:NSLayoutRelationEqual
+                                                             toItem:self.view
+                                                          attribute:NSLayoutAttributeBottom
+                                                         multiplier:1.0
+                                                           constant:0.0
+                              ]];
+    
+    
+    [self getSearchResult:@""];
+}
+
+-(void)initializeMainViewElements{
+    // Set the application logo on the Main view
+    self.applogo.image = [UIImage imageNamed:@"appLogo"];
+    
+    // Set search results TableView background alpha
+    [self.tableView setBackgroundColor:[UIColor colorWithWhite:1.0 alpha:0.5]];
+    
+    // Setting Main View background Image
+    UIGraphicsBeginImageContext(self.view.frame.size);
+    [[UIImage imageNamed:@"backgroundImage"] drawInRect:self.view.bounds];
+    UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    self.view.backgroundColor = [UIColor colorWithPatternImage:image];
+    
+    // Cancel button of search
+    cancelButton = [[UIButton alloc] initWithFrame:CGRectMake(-260.0, 20.0+self.searchBarBackground.frame.size.height/2, 37.0, 37.0)];
+    [self.view addSubview:cancelButton];
+    [cancelButton setImage:[UIImage imageNamed:@"cancelButton"] forState:UIControlStateNormal];
+    [cancelButton setTitleColor:[UIColor blueColor] forState:UIControlStateNormal];
+    [cancelButton addTarget:self
+                     action:@selector(cancelButtonAction:)
+           forControlEvents:UIControlEventTouchUpInside];
+    
+    // Search TextField
+    textField = [[UITextField alloc] initWithFrame:CGRectMake(10.0, self.view.frame.size.height/2, self.view.frame.size.width-20, 37.0)];
+    [self.view addSubview:textField];
+    [textField setPlaceholder:@"Search by name"];
+    [textField setBackgroundColor:[UIColor greenColor]];
+    
+    // Setting up the bottom border line of the search TextField
+    CALayer *border = [CALayer layer];
+    CGFloat borderWidth = 2;
+    border.borderColor = [UIColor orangeColor].CGColor;
+    border.frame = CGRectMake(-3, textField.frame.size.height - borderWidth-3, textField.frame.size.width, 1);
+    border.borderWidth = borderWidth;
+    [textField.layer addSublayer:border];
+    textField.layer.masksToBounds = YES;
+    textField.backgroundColor = [UIColor clearColor];
+    
+    // Search bar icon at the end of the UITextField
+    icon = [[UIImageView alloc] init];
+    [icon setImage:[UIImage imageNamed:@"searchIcon"]];
+    [icon setFrame:CGRectMake(textField.frame.size.width-textField.frame.size.height, 0.0f-1, textField.frame.size.height, textField.frame.size.height-2)];
+    [icon setBackgroundColor:[UIColor clearColor]];
+    [textField addSubview:icon];
+    
+    // Search Text Field change event
+    [textField addTarget:self
+                  action:@selector(textFieldDidChange:)
+        forControlEvents:UIControlEventAllEvents];
+    
+    // Search TextField keyboardDidShow Action
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(keyboardDidShow:)
+                                                 name:UIKeyboardWillShowNotification
+                                               object:nil];
+    
+    // Search Results tableView touched action
+    UITapGestureRecognizer *tableViewTapped = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tableViewTapAction:)];
+    tableViewTapped.cancelsTouchesInView = NO;
+    [self.tableView addGestureRecognizer:tableViewTapped];
 }
 
 #pragma mark - table view delegate methods
@@ -329,11 +384,7 @@ UIImageView *icon;
 }
 
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
-    
     [self performSegueWithIdentifier:@"DOCTOR_PROFILE" sender:self];
-    
-    
-    
 }
 
 #pragma mark - prepare for segue
@@ -358,8 +409,6 @@ UIImageView *icon;
 }
 
 #pragma mark - hide keyboard
-
-
 - (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
     [self.view endEditing:YES];
 }

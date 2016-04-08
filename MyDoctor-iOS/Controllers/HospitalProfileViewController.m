@@ -9,6 +9,7 @@
 #import "HospitalProfileViewController.h"
 #import "RateView.h"
 #import "OpenInGoogleMapsController.h"
+#import "WriteReview.h"
 
 @interface HospitalProfileViewController ()<UITableViewDelegate,UITableViewDataSource>
 @property (weak, nonatomic) IBOutlet UILabel *lblHospitalName;
@@ -23,7 +24,7 @@
 
 @end
 NSDictionary *reviewResults;
-
+UIView *writeReviewBackground;
 NSMutableDictionary *staticImageDictionaryHospital;
 @implementation HospitalProfileViewController
 //@synthesize passedDictionary;
@@ -105,6 +106,71 @@ NSMutableDictionary *staticImageDictionaryHospital;
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
 }
+- (IBAction)btnWriteReview:(id)sender {
+    writeReviewBackground = [[UIView alloc]initWithFrame:self.view.frame];
+    writeReviewBackground.backgroundColor = [UIColor lightGrayColor];
+    writeReviewBackground.tag = 11;
+    
+    [UIView animateWithDuration:0.3 animations:^{
+        [self.view addSubview:writeReviewBackground];
+        }
+                     completion:nil];
+
+    WriteReview *writeReview = [[WriteReview alloc] init];
+    
+    writeReview.revTitle = @"LOL";
+    writeReview.view.layer.cornerRadius = 3.0;
+    [writeReviewBackground addSubview:writeReview];
+    
+    CGPoint center = writeReview.center;
+    center.y = self.view.bounds.size.height*2;
+    center.x = self.view.bounds.size.width/2;
+    writeReview.center = center;
+    
+    writeReview.translatesAutoresizingMaskIntoConstraints = NO;
+    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:writeReview
+                                                          attribute:NSLayoutAttributeLeft
+                                                          relatedBy:NSLayoutRelationEqual
+                                                             toItem:self.view
+                                                          attribute:NSLayoutAttributeLeft
+                                                         multiplier:1.0
+                                                           constant:8.0
+                              ]];
+    
+    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:writeReview
+                                                          attribute:NSLayoutAttributeRight
+                                                          relatedBy:NSLayoutRelationEqual
+                                                             toItem:self.view
+                                                          attribute:NSLayoutAttributeRight
+                                                         multiplier:1.0
+                                                           constant:-8.0
+                              ]];
+    
+    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:writeReview
+                                                          attribute:NSLayoutAttributeBottom
+                                                          relatedBy:NSLayoutRelationEqual
+                                                             toItem:self.view
+                                                          attribute:NSLayoutAttributeBottom
+                                                         multiplier:1.0
+                                                           constant:-70.0
+                              ]];
+    
+    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:writeReview
+                                                          attribute:NSLayoutAttributeTop
+                                                          relatedBy:NSLayoutRelationEqual
+                                                             toItem:self.view
+                                                          attribute:NSLayoutAttributeTop
+                                                         multiplier:1.0
+                                                           constant:100
+                              ]];
+    
+    [UIView animateWithDuration:0.3
+                     animations:^{
+                         [writeReview layoutIfNeeded];
+                         //[[[writeReview superview] viewWithTag:11] removeFromSuperview];
+                     }
+                     completion:nil];
+}
 
 #pragma mark - table view delegate methods
 
@@ -171,6 +237,10 @@ NSMutableDictionary *staticImageDictionaryHospital;
     }
 }
 
+#pragma mark - hide keyboard
+- (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
+    [writeReviewBackground removeFromSuperview];
+}
 
 /*
 #pragma mark - Navigation

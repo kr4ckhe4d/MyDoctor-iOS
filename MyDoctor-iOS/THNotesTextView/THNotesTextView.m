@@ -164,7 +164,7 @@
 #pragma mark - Notifications
 
 - (void)textDidChangeNotification:(NSNotification*)notification {
-    [self scrollToCaretAnimated:NO];
+    //[self scrollToCaretAnimated:NO];
 }
 
 - (void)keyboardWillHide:(NSNotification*)notification {
@@ -180,7 +180,7 @@
     keyboardFrameBeginRect.size.width : keyboardFrameBeginRect.size.height;
     tmp.right = tmp.right - tmp.left;
     [self setContentInset:tmp];
-    //[self scrollToCaretAnimated:NO];
+   // [self scrollToCaretAnimated:NO];
 }
 
 @end
